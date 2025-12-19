@@ -1,8 +1,8 @@
-package br.com.one.sentiment_analisys.service;
+package br.com.one.sentiment_analysis.service;
 
-import br.com.one.sentiment_analisys.exception.ExternalApiException;
-import br.com.one.sentiment_analisys.model.SentimentRequestModel;
-import br.com.one.sentiment_analisys.model.SentimentResponse;
+import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
+import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
+import br.com.one.sentiment_analysis.exception.ExternalApiException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class ExternalApiService {
     ObjectMapper mapper = new ObjectMapper();
 
     // POST
-    public SentimentResponse analisar (SentimentRequestModel texto) throws IOException, InterruptedException {
+    public SentimentResponse analisar (SentimentAnalysisRequest texto) throws IOException, InterruptedException {
 
         String json = """
                        {
@@ -31,9 +31,9 @@ public class ExternalApiService {
 
         //Cria a requeste;
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(URL_API))
-                            .headers("Content-Type", "application/json")
-                            .POST(HttpRequest.BodyPublishers.ofString(json)) // json
-                            .build();
+                .headers("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json)) // json
+                .build();
 
         //Cria a response
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -45,14 +45,14 @@ public class ExternalApiService {
     }
 
 
-    // Todo: adicionar parâmentro de texto para modelo analisar
+    // Todo: adicionar parâmetro de texto para modelo analisar
     public String getData()  {
         try {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create(URL_API))
-                                .build();
+                    .uri(URI.create(URL_API))
+                    .build();
 
             // TODO:  adicionar Mapper para transformar Json em Objeto Java
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analisys;
+package br.com.one.sentiment_analysis;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

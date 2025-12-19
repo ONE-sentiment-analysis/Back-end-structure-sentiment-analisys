@@ -1,8 +1,8 @@
-package br.com.one.sentiment_analisys.controller;
+package br.com.one.sentiment_analysis.controller;
 
-import br.com.one.sentiment_analisys.model.SentimentRequestModel;
-import br.com.one.sentiment_analisys.model.SentimentResponse;
-import br.com.one.sentiment_analisys.service.ExternalApiService;
+import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
+import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
+import br.com.one.sentiment_analysis.service.ExternalApiService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +22,8 @@ public class SentimentController {
 
 
     @PostMapping
-    public SentimentResponse analisarComentario (@RequestBody SentimentRequestModel text)
+    public SentimentResponse analisarComentario (@RequestBody SentimentAnalysisRequest texto)
             throws IOException, InterruptedException {
-
-        return sentimentService.analisar(text);
+        return sentimentService.analisar(texto);
     }
 }
