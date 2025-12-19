@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analisys.exception;
+package br.com.one.sentiment_analysis.exception;
 
 public class ExternalApiException extends RuntimeException {
 
