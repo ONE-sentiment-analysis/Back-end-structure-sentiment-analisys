@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SentimentResponse {
     private String previsao;
-    private double probabilidade;
+    private int probabilidade;
 
     // TODO: adicionar mais parâmentos de acordo com modelo
 }
