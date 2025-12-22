@@ -24,7 +24,7 @@ public class SentimentController {
     private AvaliacaoRepository repository;
 
     private final ExternalApiService sentimentService;
-    private final Integer tamanhoPaginacao = 10;
+    private static final int TAMANHO_PAGINACAO = 10;
 
     public SentimentController(ExternalApiService sentimentService) {
         this.sentimentService = sentimentService;
@@ -40,7 +40,7 @@ public class SentimentController {
     @GetMapping
     public ResponseEntity<SentimentResponse> procurarAvaliacoes(
             @RequestParam Long idProduto,
-            @PageableDefault(size = tamanhoPaginacao) Pageable pageable) {
+            @PageableDefault(size = TAMANHO_PAGINACAO) Pageable pageable) {
 
         Page<AnaliseSentimento> page = repository.buscarPorIdProduto(idProduto, pageable);
 

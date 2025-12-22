@@ -8,9 +8,13 @@ import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
 import br.com.one.sentiment_analysis.dto.response.SentimentItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.exception.ExternalApiException;
+import br.com.one.sentiment_analysis.model.AnaliseSentimento;
+import br.com.one.sentiment_analysis.model.AvaliacaoRepository;
+import br.com.one.sentiment_analysis.model.*;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,6 +22,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -26,14 +31,21 @@ import java.util.stream.Collectors;
 @Service
 public class ExternalApiService {
 
-    // Todo: trocar URL API pelo url que vem da api com python com modelo
-    private final String URL_API = "https://jsonplaceholder.typicode.com/posts/1";
+    // Todo: Precisa trocar URL API pelo url que vem da api com python com modelo no application.properties
+    @Value("${api.python.url}")
+    private String URL_API;
 
-    ObjectMapper mapper = new ObjectMapper();
-
+    private final ObjectMapper mapper;
+    private final AvaliacaoRepository repository;
     private final HttpClient client = HttpClient.newHttpClient();
 
+    public ExternalApiService(ObjectMapper mapper, AvaliacaoRepository repository) {
+        this.mapper = mapper;
+        this.repository = repository;
+    }
+
     // POST
+    @Transactional
     public SentimentResponse analisar(SentimentAnalysisRequest sentimentRequest) throws IOException, InterruptedException { // 1. Renomeei o parâmetro para evitar conflito
 
         List<ReviewItemDTO> pythonReviews = sentimentRequest.reviews().stream()
@@ -59,6 +71,28 @@ public class ExternalApiService {
 
         Map<String, String> textoMap = sentimentRequest.reviews().stream()
                 .collect(Collectors.toMap(ReviewRequestItem::id, ReviewRequestItem::text));
+
+        List<AnaliseSentimento> entidadesParaSalvar = new ArrayList<>();
+
+        for (var resultado : pythonResponse.results()) {
+            String textoOriginal = textoMap.get(resultado.id());
+
+            AnaliseSentimento entidade = new AnaliseSentimento(
+                    new TextoAvaliacao(textoOriginal),
+                    new IdReferencia(resultado.id())
+            );
+
+            entidade.registrarResultado(
+                    TipoSentimento.valueOf(resultado.sentiment().toUpperCase()),
+                    new Probabilidade(resultado.probability()),
+                    pythonResponse.modelVersion(),
+                    LocalDateTime.now()
+            );
+
+            entidadesParaSalvar.add(entidade);
+        }
+
+        repository.saveAll(entidadesParaSalvar);
 
         List<SentimentItemResponse> itensResposta = pythonResponse.results().stream()
                 .map(res -> new SentimentItemResponse(
