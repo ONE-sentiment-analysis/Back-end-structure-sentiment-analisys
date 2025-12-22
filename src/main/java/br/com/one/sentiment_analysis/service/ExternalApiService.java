@@ -3,6 +3,7 @@ package br.com.one.sentiment_analysis.service;
 import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.exception.ExternalApiException;
+import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+@Service
 public class ExternalApiService {
 
     // Todo: trocar URL API pelo url que vem da api com python com modelo
@@ -20,11 +22,7 @@ public class ExternalApiService {
     // POST
     public SentimentResponse analisar (SentimentAnalysisRequest texto) throws IOException, InterruptedException {
 
-        String json = """
-                       {
-                            "text": "%s"
-                       }
-                       """.formatted(texto);
+        String json = mapper.writeValueAsString(texto);
 
         //Cria o cliente
         HttpClient client = HttpClient.newHttpClient();
