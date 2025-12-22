@@ -10,9 +10,3 @@ public record PythonResponseDTO(
         @JsonProperty("results") List<ResultItemDTO> results
 ) {}
 
-// Inner record para os itens da lista de resposta
-record ResultItemDTO(
-        @JsonProperty("id") String id,
-        @JsonProperty("sentiment") String sentiment,
-        @JsonProperty("probability") double probability
-) {}

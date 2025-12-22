@@ -1,67 +1,74 @@
 package br.com.one.sentiment_analysis.service;
 
+import br.com.one.sentiment_analysis.dto.integration.PythonRequestDTO;
+import br.com.one.sentiment_analysis.dto.integration.PythonResponseDTO;
+import br.com.one.sentiment_analysis.dto.integration.ReviewItemDTO;
+import br.com.one.sentiment_analysis.dto.request.ReviewRequestItem;
 import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
+import br.com.one.sentiment_analysis.dto.response.SentimentItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.exception.ExternalApiException;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
+
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ExternalApiService {
 
     // Todo: trocar URL API pelo url que vem da api com python com modelo
     private final String URL_API = "https://jsonplaceholder.typicode.com/posts/1";
+
     ObjectMapper mapper = new ObjectMapper();
 
+    private final HttpClient client = HttpClient.newHttpClient();
+
     // POST
-    public SentimentResponse analisar (SentimentAnalysisRequest texto) throws IOException, InterruptedException {
+    public SentimentResponse analisar(SentimentAnalysisRequest sentimentRequest) throws IOException, InterruptedException { // 1. Renomeei o parâmetro para evitar conflito
 
-        String json = mapper.writeValueAsString(texto);
+        List<ReviewItemDTO> pythonReviews = sentimentRequest.reviews().stream()
+                .map(r -> new ReviewItemDTO(r.id(), r.text()))
+                .toList();
 
-        //Cria o cliente
-        HttpClient client = HttpClient.newHttpClient();
+        PythonRequestDTO pythonRequest = new PythonRequestDTO("req_" + UUID.randomUUID(), pythonReviews);
+        String jsonRequest = mapper.writeValueAsString(pythonRequest);
 
-        //Cria a requeste;
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(URL_API))
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(URL_API))
                 .headers("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json)) // json
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
                 .build();
 
-        //Cria a response
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-
-        System.out.printf("Status: %s", response.statusCode());
-        //Transforma json em Objeto Java
-        return mapper.readValue(response.body(), SentimentResponse.class);
-    }
-
-
-    // Todo: adicionar parâmetro de texto para modelo analisar
-    public String getData()  {
-        try {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(URL_API))
-                    .build();
-
-            // TODO:  adicionar Mapper para transformar Json em Objeto Java
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() != 200) {
-                throw new ExternalApiException("Erro ao chamar API externa" + response.statusCode());
-            }
-            return response.body();
-
-        } catch (IOException | InterruptedException e) {
-            throw  new ExternalApiException("Falha ao chamar API externa" + e);
+        if (httpResponse.statusCode() != 200) {
+            throw new ExternalApiException("Erro na API Python: " + httpResponse.statusCode());
         }
+
+        PythonResponseDTO pythonResponse = mapper.readValue(httpResponse.body(), PythonResponseDTO.class);
+
+        Map<String, String> textoMap = sentimentRequest.reviews().stream()
+                .collect(Collectors.toMap(ReviewRequestItem::id, ReviewRequestItem::text));
+
+        List<SentimentItemResponse> itensResposta = pythonResponse.results().stream()
+                .map(res -> new SentimentItemResponse(
+                        res.id(),
+                        textoMap.get(res.id()),
+                        res.sentiment(),
+                        res.probability(),
+                        LocalDateTime.now()
+                )).toList();
+
+        return new SentimentResponse("SUCESSO", itensResposta.size(), itensResposta);
     }
 }

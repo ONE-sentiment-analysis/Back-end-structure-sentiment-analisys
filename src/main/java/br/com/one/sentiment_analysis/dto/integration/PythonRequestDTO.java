@@ -10,7 +10,3 @@ public record PythonRequestDTO(
 ) {}
 
 
-record ReviewItemDTO(
-        @JsonProperty("id") String id,
-        @JsonProperty("text") String text
-) {}
