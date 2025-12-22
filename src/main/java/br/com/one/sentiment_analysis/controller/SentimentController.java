@@ -49,7 +49,8 @@ public class SentimentController {
                         analise.getIdReferencia().getValor(),
                         analise.getTexto().getValor(),
                         analise.getPrevisao().name(),
-                        analise.getProbabilidade().getValor()
+                        analise.getProbabilidade().getValor(),
+                        analise.getDataProcessamento()
                 ))
                 .toList();
 
