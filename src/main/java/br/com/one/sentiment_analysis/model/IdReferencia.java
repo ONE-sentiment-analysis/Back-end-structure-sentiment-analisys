@@ -34,6 +34,15 @@ public class IdReferencia implements Serializable {
         this.valor = valor;
     }
 
+    public Long getIdProduto() {
+        try {
+            String[] partes = this.valor.split("_");
+            return Long.parseLong(partes[1]);
+        } catch (Exception e) {
+            throw new IllegalStateException("O formato do ID de referência é inválido para extração.", e);
+        }
+    }
+
     // Facilita o uso do objeto como String normal quando necessário
     @Override
     public String toString() {

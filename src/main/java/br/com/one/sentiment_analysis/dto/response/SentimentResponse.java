@@ -9,9 +9,3 @@ public record SentimentResponse(
         List<SentimentItemResponse> avaliacoes
 ) {}
 
-record SentimentItemResponse(
-        String idReferencia,
-        String texto,
-        String previsao,
-        double probabilidade
-) {}

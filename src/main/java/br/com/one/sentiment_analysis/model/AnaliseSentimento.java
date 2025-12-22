@@ -18,10 +18,12 @@ public class AnaliseSentimento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Embedded
+    @AttributeOverride(name = "valor", column = @Column(name = "id_referencia", unique = true, nullable = false))
     private IdReferencia idReferencia;
 
-    @Column(nullable = false, length = TAMANHO_MAXIMO_TEXTO)
+    @Embedded
+    @AttributeOverride(name = "valor", column = @Column(name = "texto", nullable = false, length = 1000))
     private TextoAvaliacao texto;
 
     @Enumerated(EnumType.STRING)
