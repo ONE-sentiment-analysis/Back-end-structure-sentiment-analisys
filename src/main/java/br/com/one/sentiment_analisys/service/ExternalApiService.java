@@ -3,6 +3,7 @@ package br.com.one.sentiment_analisys.service;
 import br.com.one.sentiment_analisys.exception.ExternalApiException;
 import br.com.one.sentiment_analisys.model.SentimentRequestModel;
 import br.com.one.sentiment_analisys.model.SentimentResponse;
+import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
+@Service
 public class ExternalApiService {
 
     // Todo: trocar URL API pelo url que vem da api com python com modelo
