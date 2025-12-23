@@ -28,7 +28,7 @@ jobs:
           java-version: '17'
           cache: maven
       - name: Build com Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package -DskipTests
 
   test:
     needs: build
