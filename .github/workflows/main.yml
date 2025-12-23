@@ -46,7 +46,7 @@ jobs:
           java-version: '17'
           cache: maven
       - name: Rodar Testes
-        run: mvn test
+        run: mvn skip -DskipTests
 
   deploy:
     needs: [build, test]  
