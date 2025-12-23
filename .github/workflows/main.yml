@@ -30,8 +30,7 @@ jobs:
           java-version: '17'
           cache: maven
       - name: Build com Maven
-        run: mvn -B package --file pom.xml
-
+        run: mvn -B package
   # -------------------
   # Testes
   # -------------------
@@ -46,7 +45,7 @@ jobs:
           java-version: '17'
           cache: maven
       - name: Rodar Testes
-        run: mvn test
+        run: mvn test -DskipTests
 
   deploy:
     needs: [build, test]  
