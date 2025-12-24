@@ -1,5 +1,6 @@
 package br.com.one.sentiment_analysis.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -15,6 +16,7 @@ public class TextoAvaliacao {
     private static final int TAMANHO_MINIMO = 5;
 
     @Column(name = "texto", nullable = false, length = TAMANHO_MAXIMO)
+    @JsonValue
     private String valor;
 
     public TextoAvaliacao(String valor) {

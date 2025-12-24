@@ -6,7 +6,7 @@ import java.util.List;
 
 public record PythonResponseDTO(
         @JsonProperty("model_version") String modelVersion,
-        @JsonProperty("processed_at") String processedAt, // Recebe como String e convertemos depois
+        @JsonProperty("processed_at") String processedAt,
         @JsonProperty("results") List<ResultItemDTO> results
 ) {}
 

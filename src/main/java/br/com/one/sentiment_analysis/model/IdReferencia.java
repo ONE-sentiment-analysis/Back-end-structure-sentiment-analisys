@@ -1,5 +1,7 @@
 package br.com.one.sentiment_analysis.model;
 
+import br.com.one.sentiment_analysis.dto.request.IdentificadorReferencia;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -17,6 +19,7 @@ public class IdReferencia implements Serializable {
     private static final Pattern PATTERN = Pattern.compile(REGEX_PADRAO);
 
     @Column(name = "id_referencia", nullable = false, unique = true)
+    @JsonValue
     private String valor;
 
     public IdReferencia(String valor) {
@@ -31,15 +34,19 @@ public class IdReferencia implements Serializable {
         this.valor = valor;
     }
 
-    public Long getIdProduto() {
+    public IdentificadorReferencia getIdAvaliacaoExtraido() {
         try {
             String[] partes = this.valor.split("_");
-            return Long.parseLong(partes[1]);
+
+            Long idProd = Long.parseLong(partes[1]);
+            Long idRev = Long.parseLong(partes[3]);
+
+            return new IdentificadorReferencia(idProd, idRev);
+
         } catch (Exception e) {
             throw new IllegalStateException("O formato do ID de referência é inválido para extração.", e);
         }
     }
-
 
     @Override
     public String toString() {

@@ -1,10 +1,12 @@
 package br.com.one.sentiment_analysis.controller;
 
 import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
-import br.com.one.sentiment_analysis.dto.response.SentimentItemResponse;
+import br.com.one.sentiment_analysis.dto.request.ValuationIdData;
+import br.com.one.sentiment_analysis.dto.response.SentimentListItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.AnaliseSentimento;
 import br.com.one.sentiment_analysis.model.AvaliacaoRepository;
+import br.com.one.sentiment_analysis.model.IdReferencia;
 import br.com.one.sentiment_analysis.service.ExternalApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/sentiment")
@@ -30,7 +31,7 @@ public class SentimentController {
     private AvaliacaoRepository repository;
 
     private final ExternalApiService sentimentService;
-    private static final int TAMANHO_PAGINACAO = 10;
+    private static final int TAMANHO_PAGINACAO = 12;
 
     public SentimentController(ExternalApiService sentimentService) {
         this.sentimentService = sentimentService;
@@ -65,27 +66,19 @@ public class SentimentController {
                     )
             )
     )
-    public ResponseEntity<SentimentResponse> procurarAvaliacoes(
-            @RequestParam Long idProduto,
+    public ResponseEntity<Page<SentimentListItemResponse>> procurarAvaliacoes(
+            ValuationIdData idProduto,
             @PageableDefault(size = TAMANHO_PAGINACAO) Pageable pageable) {
 
-        Page<AnaliseSentimento> page = repository.buscarPorIdProduto(idProduto, pageable);
+        IdReferencia idProdutoFormatado = new IdReferencia(idProduto.id());
 
-        List<SentimentItemResponse> itens = page.getContent().stream()
-                .map(analise -> new SentimentItemResponse(
-                        analise.getIdReferencia().getValor(),
-                        analise.getTexto().getValor(),
-                        analise.getPrevisao().name(),
-                        analise.getProbabilidade().getValor(),
-                        analise.getDataProcessamento()
-                ))
-                .toList();
+        Page<AnaliseSentimento> pageResult = repository.buscarPorIdProduto(
+                idProdutoFormatado
+                        .getIdAvaliacaoExtraido()
+                        .idProduto(),
+                pageable);
 
-        SentimentResponse response = new SentimentResponse(
-                "SUCESSO",
-                (int) page.getTotalElements(),
-                itens
-        );
+        Page<SentimentListItemResponse> response = pageResult.map(SentimentListItemResponse::new);
 
         return ResponseEntity.ok(response);
     }
