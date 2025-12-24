@@ -1,5 +1,6 @@
 package br.com.one.sentiment_analysis.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class Probabilidade {
 
     @Column(name = "probabilidade")
+    @JsonValue
     private double valor;
 
     public Probabilidade(double valor) {

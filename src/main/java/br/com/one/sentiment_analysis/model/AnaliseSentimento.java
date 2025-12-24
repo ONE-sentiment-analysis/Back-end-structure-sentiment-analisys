@@ -24,6 +24,7 @@ public class AnaliseSentimento {
     @Enumerated(EnumType.STRING)
     private TipoSentimento previsao;
 
+    @Embedded
     private Probabilidade probabilidade;
 
     private String versaoModelo;
