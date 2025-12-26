@@ -8,5 +8,6 @@ class SentimentAnalysisApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 }
