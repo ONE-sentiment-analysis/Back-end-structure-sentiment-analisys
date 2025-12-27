@@ -15,12 +15,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/v1/**",        // libera sua API pública
+                                "/actuator/health",  // libera health
+                                "/actuator/info"     // libera info
+                        ).permitAll()
+                        .anyRequest().authenticated() // qualquer outro precisa de login
                 )
                 .formLogin(form -> form.permitAll())
                 .logout(logout -> logout.permitAll());
 
-        return http.build(); // retorna DefaultSecurityFilterChain, que implementa SecurityFilterChain
+        return http.build();
     }
 }
