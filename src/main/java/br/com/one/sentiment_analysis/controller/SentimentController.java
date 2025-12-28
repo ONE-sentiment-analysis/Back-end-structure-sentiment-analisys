@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,9 +49,9 @@ public class SentimentController {
                     )
             )
     )
-    public SentimentResponse analisarComentario(@RequestBody SentimentAnalysisRequest texto)
-            throws IOException, InterruptedException {
-        return sentimentService.analisar(texto);
+    public ResponseEntity<SentimentResponse> analisarComentario(@RequestBody SentimentAnalysisRequest texto) throws IOException, InterruptedException {
+        SentimentResponse response = sentimentService.analisar(texto);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
@@ -87,6 +88,6 @@ public class SentimentController {
                 itens
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
