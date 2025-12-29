@@ -15,6 +15,12 @@ O sistema envia textos para o modelo de Machine Learning, recebe a análise de s
 - HttpClient (Java 11+)
 - Jackson (ObjectMapper)
 
+### Docker
+``
+Docker build -t sentiment-spring-api .
+Docker run -p 8080:8080 sentiment-spring-api
+``
+
 ## ✅ O que já foi feito
 
 - Criação dos DTOs:
