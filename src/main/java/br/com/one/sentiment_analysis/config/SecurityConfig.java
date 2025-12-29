@@ -33,6 +33,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/public/**").permitAll()
                         .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/v1/**",        // libera sua API pública
+                                "/actuator/health",  // libera health
+                                "/actuator/info"     // libera info
+                        ).permitAll()
+                        .anyRequest().authenticated() // qualquer outro precisa de login
                 )
                 .httpBasic(Customizer.withDefaults());
 
