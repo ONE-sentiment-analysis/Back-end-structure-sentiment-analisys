@@ -66,6 +66,7 @@ public class SentimentController {
                     )
             )
     )
+
     public ResponseEntity<Page<SentimentListItemResponse>> procurarAvaliacoes(
             ValuationIdData idProduto,
             @PageableDefault(size = TAMANHO_PAGINACAO) Pageable pageable) {
