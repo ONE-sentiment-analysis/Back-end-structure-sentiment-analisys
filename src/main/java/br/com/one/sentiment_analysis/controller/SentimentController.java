@@ -22,11 +22,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1/sentiment")
 @Tag(name = "Endpoint para realizar análise de sentimentos", description = "Retorna probabilidade e acurácia do comentário")
 public class SentimentController {
+    private static final Logger logger = Logger.getLogger(SentimentController.class.getName());
 
     @Autowired
     private AvaliacaoRepository repository;
@@ -52,6 +54,7 @@ public class SentimentController {
     )
     public ResponseEntity<SentimentResponse> analisarComentario(@RequestBody SentimentAnalysisRequest texto) throws IOException, InterruptedException {
         SentimentResponse response = sentimentService.analisar(texto);
+        Logger.getLogger(SentimentController.class.getName()).info("Comentário analisado com sucesso.");
         return ResponseEntity.ok(response);
     }
 
@@ -81,7 +84,7 @@ public class SentimentController {
                 pageable);
 
         Page<SentimentListItemResponse> response = pageResult.map(SentimentListItemResponse::new);
-
+        Logger.getLogger(SentimentController.class.getName()).info("Lista de avaliações retornada com sucesso.");
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

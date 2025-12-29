@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,16 +65,17 @@ public class ExternalApiService {
         HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         if (httpResponse.statusCode() != 200) {
-            throw new ExternalApiException("Erro na API Python: " + httpResponse.statusCode());
+                Logger.getLogger(ExternalApiService.class.getName()).severe("Erro na API Python: " + httpResponse.statusCode());    
+                throw new ExternalApiException("Erro na API Python: " + httpResponse.statusCode());
         }
 
         PythonResponseDTO pythonResponse = mapper.readValue(httpResponse.body(), PythonResponseDTO.class);
-
+        
         Map<String, String> textoMap = sentimentRequest.reviews().stream()
-                .collect(Collectors.toMap(ReviewRequestItem::id, ReviewRequestItem::text));
-
+        .collect(Collectors.toMap(ReviewRequestItem::id, ReviewRequestItem::text));
+        
         List<AnaliseSentimento> entidadesParaSalvar = new ArrayList<>();
-
+        
         for (var resultado : pythonResponse.results()) {
             String textoOriginal = textoMap.get(resultado.id());
 
@@ -88,10 +90,10 @@ public class ExternalApiService {
                     pythonResponse.modelVersion(),
                     LocalDateTime.now()
             );
-
+            
             entidadesParaSalvar.add(entidade);
         }
-
+        
         repository.saveAll(entidadesParaSalvar);
 
         List<SentimentItemResponse> itensResposta = pythonResponse.results().stream()
@@ -103,6 +105,7 @@ public class ExternalApiService {
                         LocalDateTime.now()
                 )).toList();
 
+        Logger.getLogger(ExternalApiService.class.getName()).info("Requisição enviada para API Python.");
         return new SentimentResponse("SUCESSO", itensResposta.size(), itensResposta);
     }
 }

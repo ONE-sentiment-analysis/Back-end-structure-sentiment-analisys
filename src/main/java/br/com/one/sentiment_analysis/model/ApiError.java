@@ -1,6 +1,5 @@
 package br.com.one.sentiment_analysis.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
