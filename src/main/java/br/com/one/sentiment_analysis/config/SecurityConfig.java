@@ -32,7 +32,6 @@ public class SecurityConfig {
                         .requestMatchers(PathPatternRequestMatcher.pathPattern("/h2-console/**")).permitAll()
                         .requestMatchers("/api/v1/public/**").permitAll()
                         .requestMatchers("/api/v1/**").authenticated()
-                        .anyRequest().authenticated()
                         .requestMatchers(
                                 "/api/v1/**",        // libera sua API pública
                                 "/actuator/health",  // libera health
