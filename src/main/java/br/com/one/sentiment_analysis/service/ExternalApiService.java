@@ -10,6 +10,7 @@ import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.exception.ExternalApiException;
 import br.com.one.sentiment_analysis.model.*;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.prometheus.metrics.core.metrics.Counter;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +30,19 @@ public class ExternalApiService {
 
     private final IExternalApiService externalApiService;
     private final AvaliacaoRepository repository;
-
+    private final Counter fallBackCounter;
     public ExternalApiService(IExternalApiService externalApiService,
                               AvaliacaoRepository repository) {
         this.externalApiService = externalApiService;
         this.repository = repository;
+
+        this.fallBackCounter = Counter.builder()
+                .name("external_api_fallback_total")
+                .help("Número de vezes que o fallback da API externa foi acionado.")
+                .register();
     }
 
+    
     @Transactional
     @CircuitBreaker(
         name = "PythonApiCircuitBreaker",
@@ -93,5 +100,12 @@ public class ExternalApiService {
 
     public SentimentResponse fallbackAnalisar(SentimentAnalysisRequest request,Throwable t) {
         log.error("Fallback executado no Circuit Breaker da análise de sentimento | reviewsCount={} | erro={}",request.reviews().size(),t.getMessage(),t);
-        throw new ExternalApiException("Serviço de análise de sentimento indisponível no momento.",t);}
+        
+        // Métrica 
+        fallBackCounter.inc();
+        
+        throw new ExternalApiException("Serviço de análise de sentimento indisponível no momento.",t);
+        
+}
+
 }
