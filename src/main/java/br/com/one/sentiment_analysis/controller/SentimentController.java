@@ -54,7 +54,7 @@ public class SentimentController {
     )
     public ResponseEntity<SentimentResponse> analisarComentario(@RequestBody SentimentAnalysisRequest texto) throws IOException, InterruptedException {
         SentimentResponse response = sentimentService.analisar(texto);
-        Logger.getLogger(SentimentController.class.getName()).info("Comentário analisado com sucesso.");
+        logger.info("Comentário analisado com sucesso.");
         return ResponseEntity.ok(response);
     }
 
@@ -84,7 +84,7 @@ public class SentimentController {
                 pageable);
 
         Page<SentimentListItemResponse> response = pageResult.map(SentimentListItemResponse::new);
-        Logger.getLogger(SentimentController.class.getName()).info("Lista de avaliações retornada com sucesso.");
+        logger.info("Lista de avaliações retornada com sucesso.");
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
