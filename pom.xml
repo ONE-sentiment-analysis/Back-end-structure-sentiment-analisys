@@ -115,6 +115,17 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-circuitbreaker -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-circuitbreaker</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

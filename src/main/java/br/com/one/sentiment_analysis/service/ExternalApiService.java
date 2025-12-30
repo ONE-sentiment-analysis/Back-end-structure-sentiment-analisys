@@ -9,6 +9,8 @@ import br.com.one.sentiment_analysis.dto.response.SentimentItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.exception.ExternalApiException;
 import br.com.one.sentiment_analysis.model.*;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,10 @@ public class ExternalApiService {
     }
 
     @Transactional
+    @CircuitBreaker(
+        name = "PythonApiCircuitBreaker",
+        fallbackMethod = "fallbackAnalisar"
+    )
     public SentimentResponse analisar(SentimentAnalysisRequest request) {
 
         PythonRequestDTO pythonRequest = new PythonRequestDTO(
@@ -39,7 +45,7 @@ public class ExternalApiService {
                         .toList()
         );
 
-        PythonResponseDTO pythonResponse = tryCallPythonApi(pythonRequest);
+        PythonResponseDTO pythonResponse = externalApiService.analisar(pythonRequest);
 
         Map<String, String> textoMap = request.reviews().stream()
                 .collect(Collectors.toMap(
@@ -80,11 +86,6 @@ public class ExternalApiService {
         return new SentimentResponse("SUCESSO", resposta.size(), resposta);
     }
 
-    private PythonResponseDTO tryCallPythonApi(PythonRequestDTO request) {
-        try {
-            return externalApiService.analisar(request);
-        } catch (Exception e) {
-            throw new ExternalApiException("Erro ao chamar API Python", e);
-        }
-    }
+    public SentimentResponse fallbackAnalisar(SentimentAnalysisRequest request, Throwable t) {
+        throw new ExternalApiException("Serviço de análise de sentimento indisponível no momento.",t);}
 }
