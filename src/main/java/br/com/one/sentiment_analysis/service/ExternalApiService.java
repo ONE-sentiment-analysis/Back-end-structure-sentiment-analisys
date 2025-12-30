@@ -13,6 +13,8 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -21,6 +23,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class ExternalApiService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(ExternalApiService.class);
 
     private final IExternalApiService externalApiService;
     private final AvaliacaoRepository repository;
@@ -86,6 +91,7 @@ public class ExternalApiService {
         return new SentimentResponse("SUCESSO", resposta.size(), resposta);
     }
 
-    public SentimentResponse fallbackAnalisar(SentimentAnalysisRequest request, Throwable t) {
+    public SentimentResponse fallbackAnalisar(SentimentAnalysisRequest request,Throwable t) {
+        log.error("Fallback executado no Circuit Breaker da análise de sentimento | reviewsCount={} | erro={}",request.reviews().size(),t.getMessage(),t);
         throw new ExternalApiException("Serviço de análise de sentimento indisponível no momento.",t);}
 }
