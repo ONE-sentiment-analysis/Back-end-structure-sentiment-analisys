@@ -2,6 +2,7 @@ package br.com.one.sentiment_analysis.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,8 +41,15 @@ public class SecurityConfig {
                     "/api/v1/public/**",
                     "/actuator/health",
                     "/actuator/info",
-                    "/actuator/prometheus",
-                    "/test/feing/**"
+                    "/actuator/prometheus"
+                ).permitAll()
+
+                .requestMatchers(HttpMethod.GET,
+                    "/api/v1/sentiment"
+                ).permitAll()
+
+                .requestMatchers(HttpMethod.POST,
+                    "api/v1/sentiment"
                 ).permitAll()
 
                 // Rotas protegidas
