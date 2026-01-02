@@ -9,8 +9,19 @@ import br.com.one.sentiment_analysis.dto.response.SentimentItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.exception.ExternalApiException;
 import br.com.one.sentiment_analysis.model.*;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -20,16 +31,26 @@ import java.util.stream.Collectors;
 @Service
 public class ExternalApiService {
 
+    private static final Logger log = LoggerFactory.getLogger(ExternalApiService.class);
+
     private final IExternalApiService externalApiService;
     private final AvaliacaoRepository repository;
-
+    private final Counter fallBackCounter;
     public ExternalApiService(IExternalApiService externalApiService,
-                              AvaliacaoRepository repository) {
+                              AvaliacaoRepository repository,
+                              MeterRegistry registry) {
         this.externalApiService = externalApiService;
         this.repository = repository;
+
+        this.fallBackCounter = Counter.builder("external_api_fallback_total")
+                .description("Número de vezes que o fallback da API externa foi acionado.")
+                .register(registry);
     }
 
     @Transactional
+    @CircuitBreaker(name = "PythonApiCircuitBreaker", fallbackMethod = "fallbackAnalisar")
+    @Retry(name = "PythonApiRetry")
+    @Bulkhead(name = "PythonApiBulkhead")
     public SentimentResponse analisar(SentimentAnalysisRequest request) {
 
         PythonRequestDTO pythonRequest = new PythonRequestDTO(
@@ -39,7 +60,7 @@ public class ExternalApiService {
                         .toList()
         );
 
-        PythonResponseDTO pythonResponse = tryCallPythonApi(pythonRequest);
+        PythonResponseDTO pythonResponse = externalApiService.analisar(pythonRequest);
 
         Map<String, String> textoMap = request.reviews().stream()
                 .collect(Collectors.toMap(
@@ -77,14 +98,29 @@ public class ExternalApiService {
                 ))
                 .toList();
 
+        log.info("Análise de sentimento concluída com sucesso | reviewsCount={}", resposta.size());
         return new SentimentResponse("SUCESSO", resposta.size(), resposta);
     }
 
-    private PythonResponseDTO tryCallPythonApi(PythonRequestDTO request) {
-        try {
-            return externalApiService.analisar(request);
-        } catch (Exception e) {
-            throw new ExternalApiException("Erro ao chamar API Python", e);
-        }
+    public SentimentResponse fallbackAnalisar(SentimentAnalysisRequest request, Throwable t) {
+        log.error("Fallback executado no Circuit Breaker da análise de sentimento | reviewsCount={} | erro={}",
+        request.reviews().size(), t.getMessage(), t);
+
+        var reviews = request.reviews() != null ? request.reviews().size() : 0;
+        log.error("Fallback executado no Circuit Breaker da análise de sentimento | reviewsCount={} | erro={}",
+                reviews, t.getMessage());
+    fallBackCounter.increment();
+
+    var resposta = request.reviews().stream()
+            .map(r -> new SentimentItemResponse(
+                    r.id(),
+                    r.text(),
+                    "indisponível",
+                    0.0,
+                    LocalDateTime.now()
+            ))
+            .toList();
+
+        return new SentimentResponse("FALLBACK", resposta.size(), resposta);
     }
 }

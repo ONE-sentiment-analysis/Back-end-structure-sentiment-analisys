@@ -15,11 +15,6 @@ O sistema envia textos para o modelo de Machine Learning, recebe a análise de s
 - HttpClient (Java 11+)
 - Jackson (ObjectMapper)
 
-### Docker
-``
-Docker build -t sentiment-spring-api .
-Docker run -p 8080:8080 sentiment-spring-api
-``
 
 ## ✅ O que já foi feito
 
@@ -30,16 +25,34 @@ Docker run -p 8080:8080 sentiment-spring-api
 - Serviço responsável pela integração com a API externa em Python
 - Conversão JSON ↔ Objetos Java utilizando `ObjectMapper`
 - Exception personalizada (`ExternalApiException`) para erros de comunicação
+- Documentação com Swagger/OpenAPI
+- Teste Unitários 
+  - `JUnit + Mockito + H2 database`
+- Spring Securoty Para proteger rotas
+- Observabilidade
+  - `Actuator`
+  - `Prometheus` 
+  - `Grafana`
+  - `Actuator` 
+- Resilience4j
+  - `Circuit Breaker`
+  - `Retry`
+  - `Rate Limiter`
+  - `Bulkhead`
+  - `TimeLimiter`
+- DockerFile
 
 ---
-## 🚧 O que ainda falta implementar
 
-- Persistência dos resultados em banco de dados (JPA + PostgreSQL/MySQL)
-- Testes unitários (JUnit + Mockito)
-- Criação de imagem Docker da aplicação
-- Documentação da API com Swagger/OpenAPI
-- Melhorar o DTO de resposta conforme o modelo Python evoluir
-- Implementar `@ControllerAdvice` para padronizar respostas de erro
+### Como rodar usando Docker
+``
+  Docker build -t sentiment-spring-api .
+``
+
+``
+  Docker run -p 8080:8080 sentiment-spring-api
+``
+
 
 ---
 
