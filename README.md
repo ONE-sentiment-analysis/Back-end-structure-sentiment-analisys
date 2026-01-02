@@ -43,6 +43,27 @@ Docker run -p 8080:8080 sentiment-spring-api
 
 ---
 
+## Como rodar Prometheus
+- [Instale](https://prometheus.io/download/) prometheus de acordo com OS
+- Extraia a pasta e edite prometheus.yaml
+````
+ global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'springboot'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['localhost:8080']
+````
+
+- Rode o comando no Terminal :  prometheus.exe
+- config.file=prometheus.yml
+
+- O Pormetheus estará rodando em: http://localhost:9090
+
+
+---
 ## 📡 Exemplo de requisição
 
 ### **POST /sentiment**

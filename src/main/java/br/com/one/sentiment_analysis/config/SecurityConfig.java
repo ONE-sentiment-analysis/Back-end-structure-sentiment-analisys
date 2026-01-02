@@ -8,15 +8,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
-
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
@@ -25,21 +23,34 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PathPatternRequestMatcher.pathPattern("/h2-console/**")).permitAll()
-                        .requestMatchers("/api/v1/public/**").permitAll()
-                        .requestMatchers("/api/v1/**").authenticated()
-                        .requestMatchers(
-                                "/api/v1/**",        // libera sua API pública
-                                "/actuator/health",  // libera health
-                                "/actuator/info"     // libera info
-                        ).permitAll()
-                        .anyRequest().authenticated() // qualquer outro precisa de login
-                )
-                .httpBasic(Customizer.withDefaults());
+            .csrf(AbstractHttpConfigurer::disable)
+            .headers(headers ->
+                headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+            )
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+
+                // H2 Console
+                .requestMatchers("/h2-console/**").permitAll()
+
+                // Rotas públicas
+                .requestMatchers(
+                    "/api/v1/public/**",
+                    "/actuator/health",
+                    "/actuator/info",
+                    "/actuator/prometheus",
+                    "/test/feing/**"
+                ).permitAll()
+
+                // Rotas protegidas
+                .requestMatchers("/api/v1/**").authenticated()
+
+                // Qualquer outra rota
+                .anyRequest().authenticated()
+            )
+            .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
@@ -47,16 +58,16 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user = User.builder()
-                .username("user")
-                .password(passwordEncoder().encode("123"))
-                .roles("USER")
-                .build();
+            .username("user")
+            .password(passwordEncoder().encode("123"))
+            .roles("USER")
+            .build();
 
         UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin123"))
-                .roles("ADMIN")
-                .build();
+            .username("admin")
+            .password(passwordEncoder().encode("admin123"))
+            .roles("ADMIN")
+            .build();
 
         return new InMemoryUserDetailsManager(user, admin);
     }
