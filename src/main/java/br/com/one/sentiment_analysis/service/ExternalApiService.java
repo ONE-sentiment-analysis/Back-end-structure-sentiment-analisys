@@ -7,17 +7,14 @@ import br.com.one.sentiment_analysis.dto.request.ReviewRequestItem;
 import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
 import br.com.one.sentiment_analysis.dto.response.SentimentItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
-import br.com.one.sentiment_analysis.exception.ExternalApiException;
 import br.com.one.sentiment_analysis.model.*;
+import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;

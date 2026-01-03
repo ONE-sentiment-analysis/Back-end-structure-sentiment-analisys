@@ -6,7 +6,7 @@ import br.com.one.sentiment_analysis.dto.request.ValuationIdData;
 import br.com.one.sentiment_analysis.dto.response.SentimentListItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.AnaliseSentimento;
-import br.com.one.sentiment_analysis.model.AvaliacaoRepository;
+import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
 import br.com.one.sentiment_analysis.model.IdReferencia;
 import br.com.one.sentiment_analysis.service.ExternalApiService;
 import io.swagger.v3.oas.annotations.Operation;
