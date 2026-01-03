@@ -1,14 +1,15 @@
 package br.com.one.sentiment_analysis.dto.request;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record SentimentAnalysisRequest(
+        @NotBlank(message = "O ID da avaliação é obrigatório")
+        String id,
 
-        @NotEmpty(message = "A lista de avaliações não pode estar vazia")
-        @Valid
-        List<ReviewRequestItem> reviews
+        @NotBlank(message = "O texto é obrigatório")
+        @Size(max = 1000, message = "O texto deve ter no máximo 1000 caracteres")
+        String text
 ) {}
 

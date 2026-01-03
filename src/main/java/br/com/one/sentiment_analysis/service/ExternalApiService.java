@@ -2,10 +2,7 @@ package br.com.one.sentiment_analysis.service;
 
 import br.com.one.sentiment_analysis.dto.integration.PythonRequestDTO;
 import br.com.one.sentiment_analysis.dto.integration.PythonResponseDTO;
-import br.com.one.sentiment_analysis.dto.integration.ReviewItemDTO;
-import br.com.one.sentiment_analysis.dto.request.ReviewRequestItem;
 import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
-import br.com.one.sentiment_analysis.dto.response.SentimentItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.*;
 import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
@@ -21,9 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ExternalApiService {
@@ -33,6 +27,7 @@ public class ExternalApiService {
     private final IExternalApiService externalApiService;
     private final AvaliacaoRepository repository;
     private final Counter fallBackCounter;
+
     public ExternalApiService(IExternalApiService externalApiService,
                               AvaliacaoRepository repository,
                               MeterRegistry registry) {
@@ -50,74 +45,51 @@ public class ExternalApiService {
     @Bulkhead(name = "PythonApiBulkhead")
     public SentimentResponse analisar(SentimentAnalysisRequest request) {
 
-        PythonRequestDTO pythonRequest = new PythonRequestDTO(
-                "req_" + UUID.randomUUID(),
-                request.reviews().stream()
-                        .map(r -> new ReviewItemDTO(r.id(), r.text()))
-                        .toList()
-        );
+        log.info("Iniciando análise para o ID: {}", request.id());
+
+        PythonRequestDTO pythonRequest = new PythonRequestDTO(request.text());
 
         PythonResponseDTO pythonResponse = externalApiService.analisar(pythonRequest);
 
-        Map<String, String> textoMap = request.reviews().stream()
-                .collect(Collectors.toMap(
-                        ReviewRequestItem::id,
-                        ReviewRequestItem::text
-                ));
+        var entidade = new AnaliseSentimento(
+                new TextoAvaliacao(request.text()),
+                new IdReferencia(request.id())
+        );
 
-        var entidades = pythonResponse.results().stream()
-                .map(res -> {
-                    var entidade = new AnaliseSentimento(
-                            new TextoAvaliacao(textoMap.get(res.id())),
-                            new IdReferencia(res.id())
-                    );
+        entidade.registrarResultado(
+                TipoSentimento.valueOf(pythonResponse.sentiment().toUpperCase()),
+                new Probabilidade(pythonResponse.probability()),
+                pythonResponse.modelVersion(),
+                LocalDateTime.now()
+        );
 
-                    entidade.registrarResultado(
-                            TipoSentimento.valueOf(res.sentiment().toUpperCase()),
-                            new Probabilidade(res.probability()),
-                            pythonResponse.modelVersion(),
-                            LocalDateTime.now()
-                    );
+        repository.saveAndFlush(entidade);
 
-                    return entidade;
-                })
-                .toList();
+        log.info("Análise de sentimento concluída com sucesso para ID: {}", request.id());
 
-        repository.saveAllAndFlush(entidades);
-
-        var resposta = pythonResponse.results().stream()
-                .map(res -> new SentimentItemResponse(
-                        res.id(),
-                        textoMap.get(res.id()),
-                        res.sentiment(),
-                        res.probability(),
-                        LocalDateTime.now()
-                ))
-                .toList();
-
-        log.info("Análise de sentimento concluída com sucesso | reviewsCount={}", resposta.size());
-        return new SentimentResponse("SUCESSO", resposta.size(), resposta);
+        return new SentimentResponse(
+                request.id(),
+                request.text(),
+                pythonResponse.sentiment(),
+                pythonResponse.probability(),
+                pythonResponse.modelVersion(),
+                entidade.getDataProcessamento()
+        );
     }
 
     public SentimentResponse fallbackAnalisar(SentimentAnalysisRequest request, Throwable t) {
-        log.error("Fallback executado no Circuit Breaker da análise de sentimento | reviewsCount={} | erro={}",
-        request.reviews().size(), t.getMessage(), t);
+        log.error("Fallback executado no Circuit Breaker da análise de sentimento para ID={} | erro={}",
+        request.id(), t.getMessage());
 
-        var reviews = request.reviews() != null ? request.reviews().size() : 0;
-        log.error("Fallback executado no Circuit Breaker da análise de sentimento | reviewsCount={} | erro={}",
-                reviews, t.getMessage());
-    fallBackCounter.increment();
+        fallBackCounter.increment();
 
-    var resposta = request.reviews().stream()
-            .map(r -> new SentimentItemResponse(
-                    r.id(),
-                    r.text(),
-                    "indisponível",
-                    0.0,
-                    LocalDateTime.now()
-            ))
-            .toList();
-
-        return new SentimentResponse("FALLBACK", resposta.size(), resposta);
+        return new SentimentResponse(
+                request.id(),
+                request.text(),
+                "indisponível",
+                0.0,
+                "indisponível",
+                LocalDateTime.now()
+        );
     }
 }

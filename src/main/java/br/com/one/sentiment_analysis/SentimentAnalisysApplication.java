@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 @EnableFeignClients
 @SpringBootApplication
 public class SentimentAnalisysApplication {
-	private static Logger log = LoggerFactory.getLogger(SentimentAnalisysApplication.class);
-	public static void main(String[] args) {
+	private static final Logger log = LoggerFactory.getLogger(SentimentAnalisysApplication.class);
+	static void main(String[] args) {
 		SpringApplication.run(SentimentAnalisysApplication.class, args);
 		log.info("Application started successfully.");
 		System.out.println("Server running on http://localhost:8080");	

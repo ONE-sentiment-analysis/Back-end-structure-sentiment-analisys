@@ -1,6 +1,6 @@
 package br.com.one.sentiment_analysis.controller;
 
-import br.com.one.sentiment_analysis.cache.SentimentCache;
+//import br.com.one.sentiment_analysis.cache.SentimentCache;
 import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
 import br.com.one.sentiment_analysis.dto.request.ValuationIdData;
 import br.com.one.sentiment_analysis.dto.response.SentimentListItemResponse;
@@ -55,12 +55,12 @@ public class SentimentController {
     )
     public ResponseEntity<SentimentResponse> analisarComentario(@RequestBody SentimentAnalysisRequest texto) throws IOException, InterruptedException {
         SentimentResponse response = sentimentService.analisar(texto);
-        if (SentimentCache.containsKey(SentimentCache.cacheKeyValue(texto))) {
-            logger.info("Comentário encontrado no cache.");
-            return ResponseEntity.ok(SentimentCache.get(SentimentCache.cacheKeyValue(texto)));
-        }
-        logger.info("Comentário analisado com sucesso.");
-        SentimentCache.put(SentimentCache.cacheKeyValue(texto), response);
+//        if (SentimentCache.containsKey(SentimentCache.cacheKeyValue(texto))) {
+//            logger.info("Comentário encontrado no cache.");
+//            return ResponseEntity.ok(SentimentCache.get(SentimentCache.cacheKeyValue(texto)));
+//        }
+//        logger.info("Comentário analisado com sucesso.");
+//        SentimentCache.put(SentimentCache.cacheKeyValue(texto), response);
         return ResponseEntity.ok(response);
     }
 
