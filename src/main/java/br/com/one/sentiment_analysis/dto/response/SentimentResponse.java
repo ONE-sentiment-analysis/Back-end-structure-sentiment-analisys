@@ -1,11 +1,13 @@
 package br.com.one.sentiment_analysis.dto.response;
 
-import java.util.List;
-
+import java.time.LocalDateTime;
 
 public record SentimentResponse(
-        String status,
-        int totalAnalisado,
-        List<SentimentItemResponse> avaliacoes
+        String idReferencia,
+        String texto,
+        String previsao,
+        double probabilidade,
+        String versaoModelo,
+        LocalDateTime dataProcessamento
 ) {}
 

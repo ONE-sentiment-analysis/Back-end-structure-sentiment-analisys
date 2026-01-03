@@ -49,7 +49,7 @@ public class SecurityConfig {
                 ).permitAll()
 
                 .requestMatchers(HttpMethod.POST,
-                    "api/v1/sentiment"
+                    "/api/v1/sentiment"
                 ).permitAll()
 
                 // Rotas protegidas
@@ -72,8 +72,8 @@ public class SecurityConfig {
             .build();
 
         UserDetails admin = User.builder()
-            .username("admin")
-            .password(passwordEncoder().encode("admin123"))
+            .username("adm")
+            .password(passwordEncoder().encode("adm123"))
             .roles("ADMIN")
             .build();
 
