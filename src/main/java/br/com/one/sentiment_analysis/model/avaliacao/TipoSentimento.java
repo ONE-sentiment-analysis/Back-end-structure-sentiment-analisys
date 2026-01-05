@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analysis.model;
+package br.com.one.sentiment_analysis.model.avaliacao;
 
 public enum TipoSentimento {
     POSITIVO,
