@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analysis.model;
+package br.com.one.sentiment_analysis.model.avaliacao;
 
 import br.com.one.sentiment_analysis.dto.request.IdentificadorReferencia;
 import com.fasterxml.jackson.annotation.JsonValue;

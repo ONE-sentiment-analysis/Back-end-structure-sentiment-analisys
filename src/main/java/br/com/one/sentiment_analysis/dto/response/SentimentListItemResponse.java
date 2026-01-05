@@ -1,6 +1,6 @@
 package br.com.one.sentiment_analysis.dto.response;
 
-import br.com.one.sentiment_analysis.model.*;
+import br.com.one.sentiment_analysis.model.avaliacao.*;
 
 import java.time.LocalDateTime;
 

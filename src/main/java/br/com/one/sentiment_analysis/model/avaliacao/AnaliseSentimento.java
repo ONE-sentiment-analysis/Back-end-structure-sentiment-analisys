@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analysis.model;
+package br.com.one.sentiment_analysis.model.avaliacao;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -31,7 +31,7 @@ public class AnaliseSentimento {
     private LocalDateTime dataProcessamento;
 
     public AnaliseSentimento(TextoAvaliacao texto, IdReferencia idReferencia) {
-        this.idReferencia = new IdReferencia(idReferencia.getValor());
+        this.idReferencia = idReferencia;
         this.texto = texto;
     }
 

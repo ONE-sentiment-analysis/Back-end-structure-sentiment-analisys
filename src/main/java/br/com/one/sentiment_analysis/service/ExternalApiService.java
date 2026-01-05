@@ -4,7 +4,7 @@ import br.com.one.sentiment_analysis.dto.integration.PythonRequestDTO;
 import br.com.one.sentiment_analysis.dto.integration.PythonResponseDTO;
 import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
-import br.com.one.sentiment_analysis.model.*;
+import br.com.one.sentiment_analysis.model.avaliacao.*;
 import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
