@@ -1,5 +1,5 @@
 package br.com.one.sentiment_analysis.repository;
-import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
+import br.com.one.sentiment_analysis.DTO.response.SentimentResponse;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;

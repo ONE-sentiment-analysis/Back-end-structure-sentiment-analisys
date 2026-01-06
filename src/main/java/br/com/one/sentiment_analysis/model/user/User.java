@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analysis.model.pessoa;
+package br.com.one.sentiment_analysis.model.user;
 
 import br.com.one.sentiment_analysis.model.avaliacao.AnaliseSentimento;
 import jakarta.persistence.*;
@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Pessoa {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,7 @@ public class Pessoa {
     @JoinColumn(name = "pessoa_id")
     private List<AnaliseSentimento> avaliacoes = new ArrayList<>();
 
-    public Pessoa(String nome) {
+    public User(String nome) {
         this.nome = nome;
     }
 

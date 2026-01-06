@@ -1,10 +1,10 @@
 package br.com.one.sentiment_analysis.controller;
 
 //import br.com.one.sentiment_analysis.cache.SentimentCache;
-import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
-import br.com.one.sentiment_analysis.dto.request.ValuationIdData;
-import br.com.one.sentiment_analysis.dto.response.SentimentListItemResponse;
-import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
+import br.com.one.sentiment_analysis.DTO.request.SentimentAnalysisRequest;
+import br.com.one.sentiment_analysis.DTO.request.ValuationIdData;
+import br.com.one.sentiment_analysis.DTO.response.SentimentListItemResponse;
+import br.com.one.sentiment_analysis.DTO.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.avaliacao.AnaliseSentimento;
 // import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
 import br.com.one.sentiment_analysis.repository.SentimentRepository;

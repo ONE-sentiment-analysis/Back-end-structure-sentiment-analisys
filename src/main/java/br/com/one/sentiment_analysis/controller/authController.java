@@ -1,11 +1,11 @@
 package br.com.one.sentiment_analysis.controller;
 
-import br.com.one.sentiment_analysis.dto.request.PessoaRequest;
-import br.com.one.sentiment_analysis.dto.response.PessoaCadastroResponse;
-import br.com.one.sentiment_analysis.dto.response.PessoaResponse;
+import br.com.one.sentiment_analysis.DTO.request.PessoaRequest;
+import br.com.one.sentiment_analysis.DTO.response.PessoaCadastroResponse;
+import br.com.one.sentiment_analysis.DTO.response.PessoaResponse;
 import br.com.one.sentiment_analysis.exception.ResourceNotFoundException;
-import br.com.one.sentiment_analysis.model.pessoa.Pessoa;
-import br.com.one.sentiment_analysis.repository.PessoaRepository;
+import br.com.one.sentiment_analysis.model.user.User;
+import br.com.one.sentiment_analysis.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -20,13 +20,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
-@RequestMapping("/api/v1/pessoas")
+@RequestMapping("/api/v1/auth")
 @Tag(name = "Endpoint para gestão de pessoas", description = "Gerencia o cadastro e visualização de usuários")
-public class PessoaController {
+public class authController {
 
     @Autowired
-    private PessoaRepository pessoaRepository;
+    private UserRepository repository;
 
     @PostMapping
     @Operation(
@@ -43,9 +45,10 @@ public class PessoaController {
             )
     )
     public ResponseEntity<PessoaCadastroResponse> cadastrarPessoa(@RequestBody @Valid PessoaRequest request) {
-        Pessoa novaPessoa = new Pessoa(request.nome());
 
-        Pessoa pessoaSalva = pessoaRepository.save(novaPessoa);
+        User novaPessoa = new User(request.nome());
+
+        User pessoaSalva = repository.save(novaPessoa);
 
         PessoaCadastroResponse response = new PessoaCadastroResponse(
                 pessoaSalva.getId(),
@@ -71,9 +74,9 @@ public class PessoaController {
     )
 //     TODO: listar usuários apenas se a ROLE for ADMIN
     public ResponseEntity<Page<PessoaResponse>> listarPessoas(
-            @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+            @PageableDefault(size = 15, sort = "nome") Pageable pageable) {
 
-        Page<Pessoa> paginaPessoas = pessoaRepository.findAll(pageable);
+        Page<User> paginaPessoas = repository.findAll(pageable);
 
         Page<PessoaResponse> response = paginaPessoas.map(pessoa ->
                 new PessoaResponse(
@@ -101,7 +104,7 @@ public class PessoaController {
     )
     public ResponseEntity<PessoaResponse> buscarPorId(@PathVariable Long id) {
 
-        Pessoa pessoa = pessoaRepository.findById(id)
+        User pessoa = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada com ID: " + id));
 
         PessoaResponse response = new PessoaResponse(
@@ -111,5 +114,16 @@ public class PessoaController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+
+    @DeleteMapping("{/id}")
+    public ResponseEntity<String> deleteUserById(@PathVariable long userId){
+        Optional<User> existUser = repository.findById(userId);
+        if (existUser.isPresent()) {
+            repository.deleteById(userId);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

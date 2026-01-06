@@ -1,6 +1,6 @@
 package br.com.one.sentiment_analysis.model.avaliacao;
 
-import br.com.one.sentiment_analysis.dto.request.IdentificadorReferencia;
+import br.com.one.sentiment_analysis.DTO.request.IdentificadorReferencia;
 import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
