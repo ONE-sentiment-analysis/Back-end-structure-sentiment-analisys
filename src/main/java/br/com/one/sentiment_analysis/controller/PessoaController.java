@@ -29,7 +29,9 @@ public class PessoaController {
     private PessoaRepository pessoaRepository;
 
     @PostMapping
-    @Operation(summary = "Cadastrar nova pessoa", description = "Recebe dados de cadastro (nome) e cria um novo usuário")
+    @Operation(
+        summary = "Cadastrar nova pessoa",
+        description = "Recebe dados de cadastro (nome) e cria um novo usuário")
     @ApiResponse(
             responseCode = "201",
             description = "Pessoa cadastrada com sucesso",
@@ -54,7 +56,9 @@ public class PessoaController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar pessoas", description = "Retorna uma lista paginada de usuários cadastrados")
+    @Operation(
+        summary = "Listar pessoas",
+        description = "Retorna uma lista paginada de usuários cadastrados")
     @ApiResponse(
             responseCode = "200",
             description = "Lista retornada com sucesso",
@@ -65,6 +69,7 @@ public class PessoaController {
                     )
             )
     )
+//     TODO: listar usuários apenas se a ROLE for ADMIN
     public ResponseEntity<Page<PessoaResponse>> listarPessoas(
             @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
 
@@ -81,6 +86,7 @@ public class PessoaController {
         return ResponseEntity.ok(response);
     }
 
+//     TODO: usuário só pode pegar detalhes da própria conta
     @GetMapping("/{id}")
     @Operation(summary = "Buscar pessoa por ID", description = "Retorna os detalhes de um usuário específico")
     @ApiResponse(
@@ -93,7 +99,6 @@ public class PessoaController {
                     )
             )
     )
-    @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     public ResponseEntity<PessoaResponse> buscarPorId(@PathVariable Long id) {
 
         Pessoa pessoa = pessoaRepository.findById(id)
