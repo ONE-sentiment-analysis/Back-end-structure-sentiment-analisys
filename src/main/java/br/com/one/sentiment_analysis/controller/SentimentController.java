@@ -6,7 +6,7 @@ import br.com.one.sentiment_analysis.dto.request.ValuationIdData;
 import br.com.one.sentiment_analysis.dto.response.SentimentListItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.AnaliseSentimento;
-import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
+import br.com.one.sentiment_analysis.repository.SentimentRepository;
 import br.com.one.sentiment_analysis.model.IdReferencia;
 import br.com.one.sentiment_analysis.service.ExternalApiService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +32,7 @@ public class SentimentController {
     private static final Logger logger = Logger.getLogger(SentimentController.class.getName());
 
     @Autowired
-    private AvaliacaoRepository repository;
+    private SentimentRepository repository;
 
     private final ExternalApiService sentimentService;
     private static final int TAMANHO_PAGINACAO = 12;

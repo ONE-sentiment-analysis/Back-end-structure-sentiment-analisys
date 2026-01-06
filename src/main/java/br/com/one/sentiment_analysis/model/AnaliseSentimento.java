@@ -30,6 +30,7 @@ public class AnaliseSentimento {
     private String versaoModelo;
     private LocalDateTime dataProcessamento;
 
+//    Contrututor
     public AnaliseSentimento(TextoAvaliacao texto, IdReferencia idReferencia) {
         this.idReferencia = new IdReferencia(idReferencia.getValor());
         this.texto = texto;
@@ -38,7 +39,7 @@ public class AnaliseSentimento {
     public void registrarResultado(TipoSentimento sentimento, Probabilidade probabilidade,
                                    String versaoModelo, LocalDateTime dataProcessamento) {
         if (sentimento == null) {
-            throw new IllegalArgumentException("O sentimento calculado não pode ser nulo");
+            this.previsao = TipoSentimento.NEUTRO;
         }
 
         this.previsao = sentimento;

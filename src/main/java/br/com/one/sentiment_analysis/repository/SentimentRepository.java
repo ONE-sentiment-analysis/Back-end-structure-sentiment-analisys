@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AvaliacaoRepository extends JpaRepository<AnaliseSentimento, Long> {
+public interface SentimentRepository extends JpaRepository<AnaliseSentimento, Long> {
     @Query("SELECT a FROM AnaliseSentimento a WHERE a.idReferencia.valor LIKE CONCAT('prod_', :idProduto, '_review_%')")
     Page<AnaliseSentimento> buscarPorIdProduto(@Param("idProduto") Long idProduto, Pageable pageable);
 }

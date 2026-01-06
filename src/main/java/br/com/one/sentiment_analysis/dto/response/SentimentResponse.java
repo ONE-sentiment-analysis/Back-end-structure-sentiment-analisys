@@ -9,5 +9,12 @@ public record SentimentResponse(
         double probabilidade,
         String versaoModelo,
         LocalDateTime dataProcessamento
-) {}
+) {
+
+    public SentimentResponse {
+        if (dataProcessamento == null) {
+            dataProcessamento = LocalDateTime.now();
+        }
+    }
+}
 
