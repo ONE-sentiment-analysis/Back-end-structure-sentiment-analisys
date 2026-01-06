@@ -4,8 +4,8 @@ import br.com.one.sentiment_analysis.dto.integration.PythonRequestDTO;
 import br.com.one.sentiment_analysis.dto.integration.PythonResponseDTO;
 import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
-import br.com.one.sentiment_analysis.model.*;
-import br.com.one.sentiment_analysis.repository.SentimentRepository;
+import br.com.one.sentiment_analysis.model.avaliacao.*;
+import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -25,11 +25,11 @@ public class ExternalApiService {
     private static final Logger log = LoggerFactory.getLogger(ExternalApiService.class);
 
     private final IExternalApiService externalApiService;
-    private final SentimentRepository repository;
+    private final AvaliacaoRepository repository;
     private final Counter fallBackCounter;
 
     public ExternalApiService(IExternalApiService externalApiService,
-                              SentimentRepository repository,
+                              AvaliacaoRepository repository,
                               MeterRegistry registry) {
         this.externalApiService = externalApiService;
         this.repository = repository;

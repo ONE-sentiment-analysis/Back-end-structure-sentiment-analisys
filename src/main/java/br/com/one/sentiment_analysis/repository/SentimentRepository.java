@@ -1,6 +1,6 @@
 package br.com.one.sentiment_analysis.repository;
 
-import br.com.one.sentiment_analysis.model.AnaliseSentimento;
+import br.com.one.sentiment_analysis.model.avaliacao.AnaliseSentimento;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
