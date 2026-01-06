@@ -24,3 +24,4 @@ public class homeController {
         return "Olá, "+ name.toUpperCase().trim();
     }
 }
+    

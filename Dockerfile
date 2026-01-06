@@ -1,5 +1,8 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:25-jdk-alpine
+
 LABEL authors="pablo"
+
+RUN mkdir -p /app
 
 WORKDIR /app
 

@@ -104,7 +104,13 @@
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
-
+        
+        <!-- Postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

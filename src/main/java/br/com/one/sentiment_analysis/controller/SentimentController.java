@@ -5,15 +5,10 @@ import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
 import br.com.one.sentiment_analysis.dto.request.ValuationIdData;
 import br.com.one.sentiment_analysis.dto.response.SentimentListItemResponse;
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
-<<<<<<< HEAD
-import br.com.one.sentiment_analysis.model.AnaliseSentimento;
-import br.com.one.sentiment_analysis.repository.SentimentRepository;
-import br.com.one.sentiment_analysis.model.IdReferencia;
-=======
 import br.com.one.sentiment_analysis.model.avaliacao.AnaliseSentimento;
-import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
+// import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
+import br.com.one.sentiment_analysis.repository.SentimentRepository;
 import br.com.one.sentiment_analysis.model.avaliacao.IdReferencia;
->>>>>>> 222ead82a4f6fee326b7951d70319f63a903d66f
 import br.com.one.sentiment_analysis.service.ExternalApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
