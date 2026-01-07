@@ -1,14 +1,10 @@
 package br.com.one.sentiment_analysis.controller;
 
-//import br.com.one.sentiment_analysis.cache.SentimentCache;
 import br.com.one.sentiment_analysis.DTO.request.SentimentAnalysisRequest;
-import br.com.one.sentiment_analysis.DTO.request.ValuationIdData;
 import br.com.one.sentiment_analysis.DTO.response.SentimentListItemResponse;
 import br.com.one.sentiment_analysis.DTO.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.avaliacao.AnaliseSentimento;
-// import br.com.one.sentiment_analysis.repository.AvaliacaoRepository;
 import br.com.one.sentiment_analysis.repository.SentimentRepository;
-import br.com.one.sentiment_analysis.model.avaliacao.IdReferencia;
 import br.com.one.sentiment_analysis.service.ExternalApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.logging.Logger;
 
 @RestController
@@ -54,14 +49,9 @@ public class SentimentController {
                     )
             )
     )
-    public ResponseEntity<SentimentResponse> analisarComentario(@RequestBody SentimentAnalysisRequest texto) throws IOException, InterruptedException {
+    public ResponseEntity<SentimentResponse> analisarComentario(@RequestBody SentimentAnalysisRequest texto) {
         SentimentResponse response = sentimentService.analisar(texto);
-//        if (SentimentCache.containsKey(SentimentCache.cacheKeyValue(texto))) {
-//            logger.info("Comentário encontrado no cache.");
-//            return ResponseEntity.ok(SentimentCache.get(SentimentCache.cacheKeyValue(texto)));
-//        }
-//        logger.info("Comentário analisado com sucesso.");
-//        SentimentCache.put(SentimentCache.cacheKeyValue(texto), response);
+
         return ResponseEntity.ok(response);
     }
 
@@ -79,15 +69,10 @@ public class SentimentController {
     )
 
     public ResponseEntity<Page<SentimentListItemResponse>> procurarAvaliacoes(
-            ValuationIdData idProduto,
+            Long idProduto,
             @PageableDefault(size = TAMANHO_PAGINACAO) Pageable pageable) {
 
-        IdReferencia idProdutoFormatado = new IdReferencia(idProduto.id());
-        Page<AnaliseSentimento> pageResult = repository.buscarPorIdProduto(
-                idProdutoFormatado
-                        .getIdAvaliacaoExtraido()
-                        .idProduto(),
-                pageable);
+        Page<AnaliseSentimento> pageResult = repository.buscarPorIdProduto(idProduto, pageable);
                 
         Page<SentimentListItemResponse> response = pageResult.map(SentimentListItemResponse::new);
         logger.info("Lista de avaliações retornada com sucesso.");

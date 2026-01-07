@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class AuthControllerSmokeTest {
 
     @Autowired
-    private authController authController;
+    private AuthController authController;
 
     @Test
     void controllerShouldNotBeNull() {

@@ -25,7 +25,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Endpoint para gestão de pessoas", description = "Gerencia o cadastro e visualização de usuários")
-public class authController {
+public class AuthController {
 
     @Autowired
     private UserRepository repository;
@@ -46,7 +46,7 @@ public class authController {
     )
     public ResponseEntity<PessoaCadastroResponse> cadastrarPessoa(@RequestBody @Valid PessoaRequest request) {
 
-        User novaPessoa = new User(request.nome());
+        User novaPessoa = new User(request.nome(), request.email(), request.senha());
 
         User pessoaSalva = repository.save(novaPessoa);
 
@@ -124,7 +124,7 @@ public class authController {
             description = "Usuário deletado com sucesso"
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable long userId){
+    public ResponseEntity<String> deleteUserById(@PathVariable("id") long userId){
         Optional<User> existUser = repository.findById(userId);
         if (existUser.isPresent()) {
             repository.deleteById(userId);
