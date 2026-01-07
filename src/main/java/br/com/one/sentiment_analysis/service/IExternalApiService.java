@@ -9,15 +9,17 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @FeignClient(
     name = "PythonModelApi",
-    url = "${http://localhost:3000}" // URL do serviço externo configurada no application.properties
+    url = "${api.python.url}"
 )
 public interface IExternalApiService {
 
     @PostMapping(
         value = "/analisar",
-        consumes = "application/json" // Especifica que o endpoint consome JSON
+        consumes = "application/json"
     )
-    // INFO : alterar o Tipo de retorno se for necessário
     PythonResponseDTO analisar(@RequestBody PythonRequestDTO request);
 
 }
+
+
+

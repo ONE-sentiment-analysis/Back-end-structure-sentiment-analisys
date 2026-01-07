@@ -123,7 +123,7 @@ public class authController {
             responseCode = "204",
             description = "Usuário deletado com sucesso"
     )
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable long userId){
         Optional<User> existUser = repository.findById(userId);
         if (existUser.isPresent()) {
