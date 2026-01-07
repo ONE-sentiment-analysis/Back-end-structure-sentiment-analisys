@@ -132,6 +132,7 @@ src/
 #### Body:
 ```json
 {
+  "id": "prod_123_review_456",
   "text": "Esse produto é excelente!"
 }
 
