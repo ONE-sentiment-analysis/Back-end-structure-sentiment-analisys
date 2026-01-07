@@ -96,7 +96,6 @@ scrape_configs:
 src/
 ├── main/
 │   ├── java/
-│   │   ├── cache/         # Implementações de cache (se houver)
 │   │   ├── config/        # Configurações da aplicação (Spring, beans, segurança, etc.)
 │   │   ├── controller/    # Controllers REST (endpoints da API)
 │   │   ├── dto/           # Data Transfer Objects (entrada/saída da API)

@@ -116,7 +116,13 @@ public class authController {
         return ResponseEntity.ok(response);
     }
 
-
+    @Operation(summary = "Deleta usuário",
+        description = "Remove usuário pelo Id, se usuário não existe retorna not found"
+    )
+    @ApiResponse(
+            responseCode = "204",
+            description = "Usuário deletado com sucesso"
+    )
     @DeleteMapping("{/id}")
     public ResponseEntity<String> deleteUserById(@PathVariable long userId){
         Optional<User> existUser = repository.findById(userId);
