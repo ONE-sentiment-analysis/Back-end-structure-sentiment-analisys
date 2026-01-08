@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -39,9 +40,11 @@ public class SecurityConfig {
                 // Rotas públicas
                 .requestMatchers(
                     "/api/v1/public/**",
-                    "/actuator/health",
-                    "/actuator/info",
-                    "/actuator/prometheus"
+                        "/actuator/health",
+                        "/actuator/info",
+                        "/actuator/prometheus",
+                        "/api/v1/auth/login",
+                        "/api/v1/auth/register"
                 ).permitAll()
 
                 .requestMatchers(HttpMethod.GET,
@@ -57,10 +60,12 @@ public class SecurityConfig {
 
                 // Qualquer outra rota
                 .anyRequest().authenticated()
-            )
-            .httpBasic(Customizer.withDefaults());
+            );
+//            .httpBasic(Customizer.withDefaults());
 
+        http.addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+
     }
 
     @Bean

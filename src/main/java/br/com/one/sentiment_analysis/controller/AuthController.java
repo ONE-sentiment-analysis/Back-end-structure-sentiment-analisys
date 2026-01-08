@@ -1,9 +1,15 @@
 package br.com.one.sentiment_analysis.controller;
 
 import br.com.one.sentiment_analysis.DTO.request.PessoaRequest;
+import br.com.one.sentiment_analysis.DTO.request.UserLoginRequest;
 import br.com.one.sentiment_analysis.DTO.response.PessoaCadastroResponse;
 import br.com.one.sentiment_analysis.DTO.response.PessoaResponse;
+import br.com.one.sentiment_analysis.DTO.response.UserLoginResponse;
+import br.com.one.sentiment_analysis.config.JwtUtil;
+import br.com.one.sentiment_analysis.exception.InvalidPasswordException;
 import br.com.one.sentiment_analysis.exception.ResourceNotFoundException;
+import br.com.one.sentiment_analysis.exception.UserAlreadyExistException;
+import br.com.one.sentiment_analysis.exception.UserNotFoundException;
 import br.com.one.sentiment_analysis.model.user.User;
 import br.com.one.sentiment_analysis.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,22 +40,26 @@ public class AuthController {
 
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    @PostMapping
+    @PostMapping("/register")
     @Operation(
         summary = "Cadastrar nova pessoa",
-        description = "Recebe dados de cadastro (nome) e cria um novo usuário")
+        description = "Recebe dados de cadastro (nome, email, senha) e cria um novo usuário")
     @ApiResponse(
             responseCode = "201",
             description = "Pessoa cadastrada com sucesso",
             content = @Content(
                     mediaType = "application/json",
                     examples = @ExampleObject(
-                            value = "{ \"id\": 1, \"nome\": \"Nome da Pessoa\"}"
+                            value = "{ \"id\": 1," +
+                                    " \"nome\": \"Nome da Pessoa\"" +
+                                    "}"
                     )
             )
     )
     public ResponseEntity<PessoaCadastroResponse> cadastrarPessoa(@RequestBody @Valid PessoaRequest request) {
-
+        if (repository.findByEmail(request.email()).isPresent()){
+            throw new UserAlreadyExistException("Email já cadastrado: "+ request.email());
+        }
         User novaPessoa = new User(request.nome(), request.email(), encoder.encode(request.senha()));
 
         User pessoaSalva = repository.save(novaPessoa);
@@ -62,6 +72,36 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/login")
+    @Operation(
+            summary = "Realizar Login",
+            description = "Cria um novo usuário e retorna um token"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Login realizado com sucesso",
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                            value = "{ \" email\": user@gmail.com, "+
+                                    "\"token\": eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYWJs..."
+                    )
+            )
+    )
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request){
+
+        User userExist = repository.findByEmail(request.email())
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
+
+        if (!encoder.matches(request.password(), userExist.getSenha())) {
+            throw new InvalidPasswordException("Senha incorreta");
+        }
+
+        String token = JwtUtil.generateToken(userExist.getEmail());
+
+        return ResponseEntity.status(HttpStatus.OK).body(new UserLoginResponse(userExist.getEmail(),token));
+    }
+
     @GetMapping
     @Operation(
         summary = "Listar pessoas",
@@ -72,7 +112,11 @@ public class AuthController {
             content = @Content(
                     mediaType = "application/json",
                     examples = @ExampleObject(
-                            value = "{ \"content\": [ { \"id\": 1, \"nome\": \"Nome da Pessoa\", \"pageable\": \"INSTANCE\", \"totalPages\": 1, \"totalElements\": 1 }"
+                            value = "{ \"content\": [ { \"id\": 1," +
+                                    " \"nome\": \"Nome da Pessoa\"," +
+                                    " \"pageable\": \"INSTANCE\"," +
+                                    " \"totalPages\": 1," +
+                                    " \"totalElements\": 1 }"
                     )
             )
     )
@@ -102,7 +146,9 @@ public class AuthController {
             content = @Content(
                     mediaType = "application/json",
                     examples = @ExampleObject(
-                            value = "{ \"id\": 1, \"nome\": \"Nome da Pessoa\"}"
+                            value = "{ \"id\": 1," +
+                                    " \"nome\": \"Nome da Pessoa\"" +
+                                    "}"
                     )
             )
     )
