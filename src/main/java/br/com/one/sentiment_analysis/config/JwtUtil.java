@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
+import java.util.Collections;
 import java.util.Date;
 
 public class JwtUtil {
@@ -17,7 +18,7 @@ public class JwtUtil {
     public static String generateToken(String email, ROLE role) {
         return Jwts.builder()
                 .setSubject(email)
-                .claim("role", role.name())
+                .claim("authorities", Collections.singletonList(role.name()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1h
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
@@ -34,15 +35,6 @@ public class JwtUtil {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public static String getSubject(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
     }
 
     public static Claims getClaims(String token) {

@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RestController
@@ -39,6 +42,7 @@ public class AuthController {
     @Autowired
     private UserRepository repository;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("/register")
     @Operation(
@@ -57,7 +61,9 @@ public class AuthController {
             )
     )
     public ResponseEntity<PessoaCadastroResponse> cadastrarPessoa(@RequestBody @Valid PessoaRequest request) {
+        log.info("Tentativa de cadastro para email: {}", request.email());
         if (repository.findByEmail(request.email()).isPresent()){
+            log.warn("Cadastro negado: email já existente {}", request.email());
             throw new UserAlreadyExistException("Email já cadastrado: "+ request.email());
         }
         User novaPessoa = new User(request.nome(), request.email(), encoder.encode(request.senha()));
@@ -68,14 +74,14 @@ public class AuthController {
                 pessoaSalva.getId(),
                 pessoaSalva.getNome()
         );
-
+        log.info("Usuário {} cadastrado com sucesso em {}", pessoaSalva.getEmail(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
     @Operation(
             summary = "Realizar Login",
-            description = "Cria um novo usuário e retorna um token"
+            description = "Autentica usuário e retorna um token JWT"
     )
     @ApiResponse(
             responseCode = "200",
@@ -89,15 +95,17 @@ public class AuthController {
             )
     )
     public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request){
-
+        log.info("Tentativa de login para email: {}", request.email());
         User userExist = repository.findByEmail(request.email())
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
 
         if (!encoder.matches(request.password(), userExist.getSenha())) {
+            log.warn("Senha incorreta para usuário {}", request.email());
             throw new InvalidPasswordException("Senha incorreta");
         }
 
         String token = JwtUtil.generateToken(userExist.getEmail(), userExist.getRole());
+        log.info("Login realizado com sucesso para {} em {}", userExist.getEmail(), LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new UserLoginResponse(
@@ -126,10 +134,9 @@ public class AuthController {
                     )
             )
     )
-//     TODO: listar usuários apenas se a ROLE for ADMIN
     public ResponseEntity<Page<PessoaResponse>> listarPessoas(
             @PageableDefault(size = 15, sort = "nome") Pageable pageable) {
-
+        log.debug("Listando usuários com paginação: {}", pageable);
         Page<User> paginaPessoas = repository.findAll(pageable);
 
         Page<PessoaResponse> response = paginaPessoas.map(pessoa ->
@@ -143,7 +150,6 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-//     TODO: usuário só pode pegar detalhes da própria conta
     @GetMapping("/{id}")
     @Operation(summary = "Buscar pessoa por ID", description = "Retorna os detalhes de um usuário específico")
     @ApiResponse(
@@ -181,11 +187,14 @@ public class AuthController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable("id") long userId){
+        log.info("Tentativa de exclusão do usuário ID {}", userId);
         Optional<User> existUser = repository.findById(userId);
         if (existUser.isPresent()) {
             repository.deleteById(userId);
+            log.info("Usuário ID {} deletado com sucesso", userId);
             return ResponseEntity.noContent().build();
         }
+        log.warn("Usuário ID {} não encontrado para exclusão", userId);
         return ResponseEntity.notFound().build();
     }
 }

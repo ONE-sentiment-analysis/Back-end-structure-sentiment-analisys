@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -27,13 +28,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (JwtUtil.validateToken(token)) {
                 Claims claims = JwtUtil.getClaims(token);
                 String email = claims.getSubject();
-                String role = claims.get("role", String.class);
+
+                Object rawAuthorities = claims.get("authorities");
+                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+                if (rawAuthorities instanceof List<?> list) {
+                    for (Object item : list) {
+                        if (item instanceof String roleStr) {
+                            authorities.add(new SimpleGrantedAuthority(roleStr));
+                        }
+                    }
+                }
+
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                email,
-                                null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                        );
+                        new UsernamePasswordAuthenticationToken(email, null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
