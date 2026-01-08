@@ -1,16 +1,16 @@
 version: '3.8'
 services:
-  postgres:
-    image: postgres:15
-    container_name: postgres_container
+  oracle:
+    image: gvenzl/oracle-xe:21-slim-faststart
+    container_name: oracle_container
     environment:
-      POSTGRES_DB: feelingnotfount
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      ORACLE_PASSWORD: mypassword
+      APP_USER: myuser
+      APP_USER_PASSWORD: mypassword
     ports:
-      - "5432:5432"
+      - "1521:1521"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - oracle_data:/opt/oracle/oradata
 
   springboot-app:
     build: .
@@ -18,11 +18,12 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      - oracle
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/feelingnotfount
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle:1521/XEPDB1
       SPRING_DATASOURCE_USERNAME: myuser
       SPRING_DATASOURCE_PASSWORD: mypassword
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.OracleDialect
 
 volumes:
-  pgdata:
+  oracle_data:
