@@ -6,7 +6,6 @@ import br.com.one.sentiment_analysis.DTO.response.PessoaCadastroResponse;
 import br.com.one.sentiment_analysis.DTO.response.PessoaResponse;
 import br.com.one.sentiment_analysis.DTO.response.UserLoginResponse;
 import br.com.one.sentiment_analysis.config.JwtUtil;
-import br.com.one.sentiment_analysis.config.UserAuthenticated;
 import br.com.one.sentiment_analysis.exception.InvalidPasswordException;
 import br.com.one.sentiment_analysis.exception.ResourceNotFoundException;
 import br.com.one.sentiment_analysis.exception.UserAlreadyExistException;
@@ -19,7 +18,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -106,14 +104,13 @@ public class AuthController {
             throw new InvalidPasswordException("Senha incorreta");
         }
 
-        String token = JwtUtil.generateToken(userExist.getEmail(), userExist.getRole());
+        String token = JwtUtil.generateToken(userExist.getEmail());
         log.info("Login realizado com sucesso para {} em {}", userExist.getEmail(), LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new UserLoginResponse(
                 userExist.getEmail(),
-                token,
-                userExist.getRole().name()
+                token
         ));
     }
 //    TODO: Deve retorna apenas com Role ADMIN
@@ -226,16 +223,4 @@ public class AuthController {
         return ResponseEntity.notFound().build();
     }
 
-
-    @GetMapping("/me")
-    public ResponseEntity<?> me(UserAuthenticated user) {
-
-        return ResponseEntity.ok(
-                Map.of(
-                        "id", user.getId(),
-                        "email", user.getEmail(),
-                        "token", user.getRole()
-                )
-        );
-    }
 }
