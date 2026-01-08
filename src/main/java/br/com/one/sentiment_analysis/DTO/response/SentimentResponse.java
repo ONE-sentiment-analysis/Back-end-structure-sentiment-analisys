@@ -6,7 +6,7 @@ public record SentimentResponse(
         String idReferencia,
         String texto,
         String previsao,
-        double probabilidade,
+        String probabilidadeFormatada,
         String versaoModelo,
         LocalDateTime dataProcessamento
 ) {

@@ -68,11 +68,14 @@ public class ExternalApiService {
 
         log.info("Análise de sentimento concluída com sucesso para ID: {}", request.id());
 
+        Probabilidade probabilidade = new Probabilidade(pythonResponse.probability());
+        String probabilidadeFormatada = probabilidade.asPercentual();
+
         return new SentimentResponse(
                 request.id(),
                 request.text(),
                 pythonResponse.sentiment(),
-                pythonResponse.probability(),
+                probabilidadeFormatada,
                 pythonResponse.modelVersion(),
                 entidade.getDataProcessamento()
         );
@@ -88,7 +91,7 @@ public class ExternalApiService {
                 request.id(),
                 request.text(),
                 "indisponível",
-                0.0,
+                "0%",
                 "indisponível",
                 LocalDateTime.now()
         );

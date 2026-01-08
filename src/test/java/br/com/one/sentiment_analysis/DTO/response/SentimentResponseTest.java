@@ -16,7 +16,7 @@ class SentimentResponseTest {
                 "123",
                 "não é tão ruim quanto pensei",
                 "Positivo",
-                0.95,
+                "95%",
                 "v1.0",
                 now
         );
@@ -24,7 +24,7 @@ class SentimentResponseTest {
         assertEquals("123", response.idReferencia());
         assertEquals("não é tão ruim quanto pensei", response.texto());
         assertEquals("Positivo", response.previsao());
-        assertEquals(0.95, response.probabilidade());
+        assertEquals("95%", response.probabilidadeFormatada());
         assertEquals("v1.0", response.versaoModelo());
         assertEquals(now, response.dataProcessamento());
     }

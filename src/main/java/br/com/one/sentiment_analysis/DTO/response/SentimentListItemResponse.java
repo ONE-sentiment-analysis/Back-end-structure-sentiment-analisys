@@ -8,7 +8,7 @@ public record SentimentListItemResponse(
         IdReferencia idReferencia,
         TextoAvaliacao texto,
         TipoSentimento previsao,
-        Probabilidade probabilidade,
+        String probabilidadeFormatada,
         LocalDateTime dataProcessamento
 ) {
     public SentimentListItemResponse(AnaliseSentimento entidade) {
@@ -16,7 +16,7 @@ public record SentimentListItemResponse(
                 entidade.getIdReferencia(),
                 entidade.getTexto(),
                 entidade.getPrevisao(),
-                entidade.getProbabilidade(),
+                entidade.getProbabilidade().asPercentual(),
                 entidade.getDataProcessamento()
         );
     }
