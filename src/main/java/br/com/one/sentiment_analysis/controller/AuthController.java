@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -29,6 +31,8 @@ public class AuthController {
 
     @Autowired
     private UserRepository repository;
+
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @PostMapping
     @Operation(
@@ -46,7 +50,7 @@ public class AuthController {
     )
     public ResponseEntity<PessoaCadastroResponse> cadastrarPessoa(@RequestBody @Valid PessoaRequest request) {
 
-        User novaPessoa = new User(request.nome(), request.email(), request.senha());
+        User novaPessoa = new User(request.nome(), request.email(), encoder.encode(request.senha()));
 
         User pessoaSalva = repository.save(novaPessoa);
 

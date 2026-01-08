@@ -1,5 +1,6 @@
 package br.com.one.sentiment_analysis.controller;
 
+import br.com.one.sentiment_analysis.DTO.response.PessoaCadastroResponse;
 import br.com.one.sentiment_analysis.model.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -22,10 +24,13 @@ public class AuthControllerE2ETest {
     void shouldCreateAndDeleteUser() {
         User user = new User("pedro", "pedro@email.com", "senha123");
 
-        ResponseEntity<String> create =
-                restTemplate.postForEntity("/api/v1/auth", user, String.class);
+        ResponseEntity<PessoaCadastroResponse> createResponse =
+                restTemplate.postForEntity("/api/v1/auth", user, PessoaCadastroResponse.class);
 
-        assertEquals(HttpStatus.CREATED, create.getStatusCode());
+        assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
+        assertNotNull(createResponse.getBody());
+
+        Long idGerado = createResponse.getBody().id();
 
         ResponseEntity<Void> delete =
                 restTemplate.exchange(
@@ -33,7 +38,7 @@ public class AuthControllerE2ETest {
                         HttpMethod.DELETE,
                         null,
                         Void.class,
-                        user.getId()
+                        idGerado
                 );
 
         assertEquals(HttpStatus.NO_CONTENT, delete.getStatusCode());
