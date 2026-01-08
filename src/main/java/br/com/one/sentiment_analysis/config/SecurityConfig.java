@@ -37,23 +37,22 @@ public class SecurityConfig {
 
                 // H2 Console
                 .requestMatchers("/h2-console/**").permitAll()
+                    // Swagger
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                // Rotas públicas
+
+                    // Rotas públicas
                 .requestMatchers(
                     "/api/v1/public/**",
                         "/actuator/health",
                         "/actuator/info",
                         "/actuator/prometheus",
-                        "/api/v1/auth/login",
-                        "/api/v1/auth/register"
+                        "/api/v1/auth/**"
                 ).permitAll()
 
                 .requestMatchers(HttpMethod.GET,
                     "/api/v1/sentiment"
                 ).permitAll()
-
-                    .requestMatchers("/api/v1/auth/users")
-                    .hasRole("ADMIN")
 
                 .requestMatchers(HttpMethod.POST,
                     "/api/v1/sentiment"
@@ -66,7 +65,6 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             );
 
-        http.addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
     }

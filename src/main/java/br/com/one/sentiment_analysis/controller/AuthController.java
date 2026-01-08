@@ -1,11 +1,12 @@
 package br.com.one.sentiment_analysis.controller;
 
-import br.com.one.sentiment_analysis.DTO.request.PessoaRequest;
+import br.com.one.sentiment_analysis.DTO.request.UserRegisterRequest;
 import br.com.one.sentiment_analysis.DTO.request.UserLoginRequest;
 import br.com.one.sentiment_analysis.DTO.response.PessoaCadastroResponse;
 import br.com.one.sentiment_analysis.DTO.response.PessoaResponse;
 import br.com.one.sentiment_analysis.DTO.response.UserLoginResponse;
 import br.com.one.sentiment_analysis.config.JwtUtil;
+import br.com.one.sentiment_analysis.config.UserAuthenticated;
 import br.com.one.sentiment_analysis.exception.InvalidPasswordException;
 import br.com.one.sentiment_analysis.exception.ResourceNotFoundException;
 import br.com.one.sentiment_analysis.exception.UserAlreadyExistException;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,13 +27,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -60,13 +62,13 @@ public class AuthController {
                     )
             )
     )
-    public ResponseEntity<PessoaCadastroResponse> cadastrarPessoa(@RequestBody @Valid PessoaRequest request) {
+    public ResponseEntity<PessoaCadastroResponse> cadastrarPessoa(@RequestBody @Valid UserRegisterRequest request) {
         log.info("Tentativa de cadastro para email: {}", request.email());
         if (repository.findByEmail(request.email()).isPresent()){
             log.warn("Cadastro negado: email já existente {}", request.email());
             throw new UserAlreadyExistException("Email já cadastrado: "+ request.email());
         }
-        User novaPessoa = new User(request.nome(), request.email(), encoder.encode(request.senha()));
+        User novaPessoa = new User(request.name(), request.email(), encoder.encode(request.password()));
 
         User pessoaSalva = repository.save(novaPessoa);
 
@@ -114,9 +116,8 @@ public class AuthController {
                 userExist.getRole().name()
         ));
     }
-
+//    TODO: Deve retorna apenas com Role ADMIN
     @GetMapping("/users")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Listar pessoas",
         description = "Retorna uma lista paginada de usuários cadastrados")
@@ -178,6 +179,34 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<PessoaResponse> updateUserById(@PathVariable Long id, @RequestBody UserRegisterRequest request) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
+
+        if(request.email() != null) {
+            user.setNome(request.email());
+        }
+
+        if (request.name() != null) {
+            user.setNome(request.name());
+        }
+
+        if (request.password() != null && !request.password().isBlank()) {
+            user.setSenha(encoder.encode(request.password()));
+        }
+        User updatedUser = repository.save(user);
+
+        return ResponseEntity.ok(
+                new PessoaResponse(
+                        updatedUser.getId(),
+                        updatedUser.getNome(),
+                        updatedUser.getAvaliacoes().size()
+                )
+        );
+    }
+
+    @DeleteMapping("/{id}")
     @Operation(summary = "Deleta usuário",
         description = "Remove usuário pelo Id, se usuário não existe retorna not found"
     )
@@ -185,7 +214,6 @@ public class AuthController {
             responseCode = "204",
             description = "Usuário deletado com sucesso"
     )
-    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable("id") long userId){
         log.info("Tentativa de exclusão do usuário ID {}", userId);
         Optional<User> existUser = repository.findById(userId);
@@ -196,5 +224,18 @@ public class AuthController {
         }
         log.warn("Usuário ID {} não encontrado para exclusão", userId);
         return ResponseEntity.notFound().build();
+    }
+
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(UserAuthenticated user) {
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "id", user.getId(),
+                        "email", user.getEmail(),
+                        "token", user.getRole()
+                )
+        );
     }
 }
