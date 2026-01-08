@@ -1,5 +1,7 @@
 package br.com.one.sentiment_analysis.config;
 
+import br.com.one.sentiment_analysis.model.user.ROLE;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -12,9 +14,10 @@ public class JwtUtil {
             "minhaChaveSuperSecretaDePeloMenos32Caracteres!".getBytes()
     );
 
-    public static String generateToken(String email) {
+    public static String generateToken(String email, ROLE role) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("role", role.name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1h
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
@@ -41,4 +44,13 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
+
+    public static Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 }

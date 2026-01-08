@@ -51,6 +51,9 @@ public class SecurityConfig {
                     "/api/v1/sentiment"
                 ).permitAll()
 
+                    .requestMatchers("/api/v1/auth/users")
+                    .hasRole("ADMIN")
+
                 .requestMatchers(HttpMethod.POST,
                     "/api/v1/sentiment"
                 ).permitAll()
@@ -61,7 +64,6 @@ public class SecurityConfig {
                 // Qualquer outra rota
                 .anyRequest().authenticated()
             );
-//            .httpBasic(Customizer.withDefaults());
 
         http.addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -77,7 +79,7 @@ public class SecurityConfig {
             .build();
 
         UserDetails admin = User.builder()
-            .username("adm")
+            .username("adm@gmail.com")
             .password(passwordEncoder().encode("adm123"))
             .roles("ADMIN")
             .build();

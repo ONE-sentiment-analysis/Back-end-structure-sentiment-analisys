@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.support.BeanDefinitionDsl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +40,15 @@ public class User {
     @JoinColumn(name = "pessoa_id")
     private List<AnaliseSentimento> avaliacoes = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ROLE role;
+
     public User(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.role = ROLE.USER;
     }
 
     public void adicionarAvaliacao(AnaliseSentimento avaliacao) {

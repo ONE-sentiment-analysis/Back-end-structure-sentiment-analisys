@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,6 @@ public class AuthController {
 
     @Autowired
     private UserRepository repository;
-
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @PostMapping("/register")
@@ -97,12 +97,18 @@ public class AuthController {
             throw new InvalidPasswordException("Senha incorreta");
         }
 
-        String token = JwtUtil.generateToken(userExist.getEmail());
+        String token = JwtUtil.generateToken(userExist.getEmail(), userExist.getRole());
 
-        return ResponseEntity.status(HttpStatus.OK).body(new UserLoginResponse(userExist.getEmail(),token));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new UserLoginResponse(
+                userExist.getEmail(),
+                token,
+                userExist.getRole().name()
+        ));
     }
 
-    @GetMapping
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Listar pessoas",
         description = "Retorna uma lista paginada de usuários cadastrados")

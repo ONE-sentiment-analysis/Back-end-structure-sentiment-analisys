@@ -1,5 +1,8 @@
 package br.com.one.sentiment_analysis;
 
+import br.com.one.sentiment_analysis.model.user.User;
+import br.com.one.sentiment_analysis.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
