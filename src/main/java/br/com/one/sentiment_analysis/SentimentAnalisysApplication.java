@@ -1,8 +1,5 @@
 package br.com.one.sentiment_analysis;
 
-import br.com.one.sentiment_analysis.model.user.User;
-import br.com.one.sentiment_analysis.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -13,7 +10,7 @@ import org.slf4j.LoggerFactory;
 @SpringBootApplication
 public class SentimentAnalisysApplication {
 	private static final Logger log = LoggerFactory.getLogger(SentimentAnalisysApplication.class);
-	public static void main(String[] args) {
+	static void main(String[] args) {
 		SpringApplication.run(SentimentAnalisysApplication.class, args);
 		log.info("Application started successfully.");
 		System.out.println("Server running on http://localhost:8080");
