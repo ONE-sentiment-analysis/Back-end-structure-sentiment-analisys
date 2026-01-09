@@ -10,6 +10,9 @@ public record SentimentAnalysisRequest(
 
         @NotBlank(message = "O texto é obrigatório")
         @Size(max = 1000, message = "O texto deve ter no máximo 1000 caracteres")
-        String text
+        String text,
+
+        @NotBlank(message = "Escolha um modelo")
+        String model
 ) {}
 

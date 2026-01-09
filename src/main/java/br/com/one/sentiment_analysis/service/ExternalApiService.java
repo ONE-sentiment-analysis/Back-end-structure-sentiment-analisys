@@ -48,7 +48,7 @@ public class ExternalApiService {
 
         log.info("Iniciando análise para o ID: {}", request.id());
 
-        PythonRequestDTO pythonRequest = new PythonRequestDTO(request.text());
+        PythonRequestDTO pythonRequest = new PythonRequestDTO(request.text(), request.model());
 
         PythonResponseDTO pythonResponse = externalApiService.analisar(pythonRequest);
 

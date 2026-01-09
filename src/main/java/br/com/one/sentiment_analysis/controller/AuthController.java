@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -177,12 +178,12 @@ public class AuthController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PessoaResponse> updateUserById(@PathVariable Long id, @RequestBody UserRegisterRequest request) {
+    public ResponseEntity<?> updateUserById(@PathVariable Long id, @RequestBody UserRegisterRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
 
         if(request.email() != null) {
-            user.setNome(request.email());
+            user.setEmail(request.email());
         }
 
         if (request.name() != null) {
@@ -194,13 +195,13 @@ public class AuthController {
         }
         User updatedUser = repository.save(user);
 
-        return ResponseEntity.ok(
-                new PessoaResponse(
-                        updatedUser.getId(),
-                        updatedUser.getNome(),
-                        updatedUser.getAvaliacoes().size()
-                )
-        );
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", updatedUser.getId());
+        response.put("nome", updatedUser.getNome());
+        response.put("email", updatedUser.getEmail());
+        response.put("avaliacoes", updatedUser.getAvaliacoes().size());
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
