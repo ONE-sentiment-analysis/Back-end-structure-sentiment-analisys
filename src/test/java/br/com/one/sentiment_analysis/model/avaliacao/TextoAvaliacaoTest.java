@@ -1,7 +1,6 @@
-package br.com.one.sentiment_analysis.DTO.response;
+package br.com.one.sentiment_analysis.model.avaliacao;
 
 
-import br.com.one.sentiment_analysis.model.avaliacao.TextoAvaliacao;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +30,7 @@ public class TextoAvaliacaoTest {
     @Test
     void shouldReturnExceptionWhenTextIsShort(){
         Exception ex = assertThrows(IllegalArgumentException.class,
-            () -> new TextoAvaliacao("Teste"));
+            () -> new TextoAvaliacao("Test"));
         assertEquals("O texto precisa atingir o mínimo de 5 caracteres.", ex.getMessage());
     }
 
@@ -39,6 +38,6 @@ public class TextoAvaliacaoTest {
     void shouldReturnExceptionWhenTextIsToLong(){
         Exception ex = assertThrows(IllegalArgumentException.class,
                 () -> new TextoAvaliacao("a".repeat(1001)));
-        assertEquals("O texto precisa atingir o mínimo de 1000 caracteres.", ex.getMessage());
+        assertEquals("O texto excede o limite de 1000 caracteres.", ex.getMessage());
     }
 }

@@ -3,8 +3,8 @@ package br.com.one.sentiment_analysis.service;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import br.com.one.sentiment_analysis.DTO.integration.PythonRequestDTO;
-import br.com.one.sentiment_analysis.DTO.integration.PythonResponseDTO;
+import br.com.one.sentiment_analysis.dto.integration.PythonRequestDTO;
+import br.com.one.sentiment_analysis.dto.integration.PythonResponseDTO;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @FeignClient(

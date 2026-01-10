@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analysis.DTO.response;
+package br.com.one.sentiment_analysis.dto.response;
 
 import br.com.one.sentiment_analysis.model.avaliacao.*;
 

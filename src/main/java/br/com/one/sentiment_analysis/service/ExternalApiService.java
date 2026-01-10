@@ -1,9 +1,9 @@
 package br.com.one.sentiment_analysis.service;
 
-import br.com.one.sentiment_analysis.DTO.integration.PythonRequestDTO;
-import br.com.one.sentiment_analysis.DTO.integration.PythonResponseDTO;
-import br.com.one.sentiment_analysis.DTO.request.SentimentAnalysisRequest;
-import br.com.one.sentiment_analysis.DTO.response.SentimentResponse;
+import br.com.one.sentiment_analysis.dto.integration.PythonRequestDTO;
+import br.com.one.sentiment_analysis.dto.integration.PythonResponseDTO;
+import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
+import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.avaliacao.*;
 import br.com.one.sentiment_analysis.repository.SentimentRepository;
 import com.opencsv.CSVReader;

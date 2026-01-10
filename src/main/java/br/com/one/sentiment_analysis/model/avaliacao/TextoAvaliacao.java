@@ -21,7 +21,7 @@ public class TextoAvaliacao {
 
     public TextoAvaliacao(String valor) {
         if (valor == null || valor.isBlank()) {
-            throw new IllegalArgumentException("O texto não pode ser nulo ou vazio");
+            throw new IllegalArgumentException("O texto não pode ser nulo ou vazio.");
         }
         if (valor.length() > TAMANHO_MAXIMO) {
             throw new IllegalArgumentException("O texto excede o limite de " + TAMANHO_MAXIMO + " caracteres.");

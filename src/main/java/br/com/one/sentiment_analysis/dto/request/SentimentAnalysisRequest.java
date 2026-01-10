@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analysis.DTO.request;
+package br.com.one.sentiment_analysis.dto.request;
 
 
 import jakarta.validation.constraints.NotBlank;

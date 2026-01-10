@@ -1,6 +1,6 @@
 package br.com.one.sentiment_analysis.model.avaliacao;
 
-import br.com.one.sentiment_analysis.DTO.request.IdentificadorReferencia;
+import br.com.one.sentiment_analysis.dto.request.IdentificadorReferencia;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
