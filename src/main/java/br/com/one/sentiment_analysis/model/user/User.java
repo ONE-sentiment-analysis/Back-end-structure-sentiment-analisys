@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.context.support.BeanDefinitionDsl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +47,9 @@ public class User {
     }
 
     public void adicionarAvaliacao(AnaliseSentimento avaliacao) {
+        if (avaliacao == null) {
+            throw new IllegalArgumentException("A avaliação não pode ser nula");
+        }
         this.avaliacoes.add(avaliacao);
     }
 }

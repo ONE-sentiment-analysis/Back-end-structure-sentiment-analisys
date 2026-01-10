@@ -30,7 +30,6 @@ public class AnaliseSentimento {
     private String versaoModelo;
     private LocalDateTime dataProcessamento;
 
-//    Contrututor
     public AnaliseSentimento(TextoAvaliacao texto, IdReferencia idReferencia) {
         this.idReferencia = idReferencia;
         this.texto = texto;
