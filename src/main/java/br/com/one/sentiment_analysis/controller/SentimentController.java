@@ -117,7 +117,7 @@ public class SentimentController {
             Long idAvaliacao,
             @PageableDefault(size = TAMANHO_PAGINACAO, sort = "dataProcessamento", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<AnaliseSentimento> pageResult = repository.findAllByUserIdOrderByAsc(idAvaliacao, pageable);
+        Page<AnaliseSentimento> pageResult = repository.findAllById(idAvaliacao, pageable);
                 
         Page<SentimentListItemResponse> response = pageResult.map(SentimentListItemResponse::new);
         logger.info("Lista de avaliações retornada com sucesso.");
