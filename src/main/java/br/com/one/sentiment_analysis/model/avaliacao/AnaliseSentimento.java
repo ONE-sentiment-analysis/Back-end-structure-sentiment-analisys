@@ -16,9 +16,6 @@ public class AnaliseSentimento {
     private Long id;
 
     @Embedded
-    private IdReferencia idReferencia;
-
-    @Embedded
     private TextoAvaliacao texto;
 
     @Enumerated(EnumType.STRING)
@@ -28,10 +25,10 @@ public class AnaliseSentimento {
     private Probabilidade probabilidade;
 
     private String versaoModelo;
+
     private LocalDateTime dataProcessamento;
 
-    public AnaliseSentimento(TextoAvaliacao texto, IdReferencia idReferencia) {
-        this.idReferencia = idReferencia;
+    public AnaliseSentimento(TextoAvaliacao texto) {
         this.texto = texto;
     }
 

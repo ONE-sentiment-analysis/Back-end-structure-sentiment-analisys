@@ -5,7 +5,7 @@ import br.com.one.sentiment_analysis.model.avaliacao.*;
 import java.time.LocalDateTime;
 
 public record SentimentListItemResponse(
-        IdReferencia idReferencia,
+        Long id,
         TextoAvaliacao texto,
         TipoSentimento previsao,
         String probabilidadeFormatada,
@@ -13,7 +13,7 @@ public record SentimentListItemResponse(
 ) {
     public SentimentListItemResponse(AnaliseSentimento entidade) {
         this(
-                entidade.getIdReferencia(),
+                entidade.getId(),
                 entidade.getTexto(),
                 entidade.getPrevisao(),
                 entidade.getProbabilidade().asPercentual(),
