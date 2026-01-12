@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -113,10 +114,10 @@ public class SentimentController {
     )
 
     public ResponseEntity<Page<SentimentListItemResponse>> procurarAvaliacoes(
-            Long idProduto,
-            @PageableDefault(size = TAMANHO_PAGINACAO) Pageable pageable) {
+            Long idAvaliacao,
+            @PageableDefault(size = TAMANHO_PAGINACAO, sort = "dataProcessamento", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<AnaliseSentimento> pageResult = repository.buscarPorIdProduto(idProduto, pageable);
+        Page<AnaliseSentimento> pageResult = repository.findAllByUserIdOrderByAsc(idAvaliacao, pageable);
                 
         Page<SentimentListItemResponse> response = pageResult.map(SentimentListItemResponse::new);
         logger.info("Lista de avaliações retornada com sucesso.");
