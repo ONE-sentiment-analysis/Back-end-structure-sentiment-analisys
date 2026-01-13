@@ -1,9 +1,9 @@
 package br.com.one.sentiment_analysis.service;
 
-import br.com.one.sentiment_analysis.DTO.integration.PythonRequestDTO;
-import br.com.one.sentiment_analysis.DTO.integration.PythonResponseDTO;
-import br.com.one.sentiment_analysis.DTO.request.SentimentAnalysisRequest;
-import br.com.one.sentiment_analysis.DTO.response.SentimentResponse;
+import br.com.one.sentiment_analysis.dto.integration.PythonRequestDTO;
+import br.com.one.sentiment_analysis.dto.integration.PythonResponseDTO;
+import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
+import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.avaliacao.*;
 import br.com.one.sentiment_analysis.repository.SentimentRepository;
 import com.opencsv.CSVReader;
@@ -50,15 +50,14 @@ public class ExternalApiService {
     @Bulkhead(name = "PythonApiBulkhead")
     public SentimentResponse analisar(SentimentAnalysisRequest request) {
 
-        log.info("Iniciando análise para o ID: {}", request.id());
+        log.info("Iniciando análise");
 
         PythonRequestDTO pythonRequest = new PythonRequestDTO(request.text(), request.model());
 
         PythonResponseDTO pythonResponse = externalApiService.analisar(pythonRequest);
 
         var entidade = new AnaliseSentimento(
-                new TextoAvaliacao(request.text()),
-                new IdReferencia(request.id())
+                new TextoAvaliacao(request.text())
         );
 
         entidade.registrarResultado(
@@ -70,13 +69,12 @@ public class ExternalApiService {
 
         repository.saveAndFlush(entidade);
 
-        log.info("Análise de sentimento concluída com sucesso para ID: {}", request.id());
+        log.info("Análise de sentimento concluída com sucesso");
 
         Probabilidade probabilidade = new Probabilidade(pythonResponse.probability());
         String probabilidadeFormatada = probabilidade.asPercentual();
 
         return new SentimentResponse(
-                request.id(),
                 request.text(),
                 pythonResponse.sentiment(),
                 probabilidadeFormatada,
@@ -92,7 +90,7 @@ public class ExternalApiService {
                 CSVReader csvReader = new CSVReader(reader)
         ) {
             String[] header = {
-                    "ID Referencia", "Texto", "Previsao", "Probabilidade",
+                    "Texto", "Previsao", "Probabilidade",
                     "Versao Modelo", "Data Processamento", "Status", "Detalhe do Erro"
             };
             writer.writeNext(header);
@@ -108,11 +106,10 @@ public class ExternalApiService {
                         continue;
                     }
 
-                    String id = nextLine[0];
                     String texto = nextLine[1];
                     String  modelVersion = nextLine[2];
 
-                    processarLinha(writer, id, texto, modelVersion);
+                    processarLinha(writer, texto, modelVersion);
                 }
             } catch (Exception e) {
                 log.error("Erro fatal durante o processamento do CSV", e);
@@ -130,9 +127,9 @@ public class ExternalApiService {
         }
     }
 
-    private void processarLinha(CSVWriter writer, String id, String texto, String modelVersion) {
+    private void processarLinha(CSVWriter writer, String texto, String modelVersion) {
         try {
-            SentimentAnalysisRequest request = new SentimentAnalysisRequest(id, texto, modelVersion);
+            SentimentAnalysisRequest request = new SentimentAnalysisRequest(texto, modelVersion);
 
             SentimentResponse response = this.analisar(request);
 
@@ -140,7 +137,6 @@ public class ExternalApiService {
             String msgErro = "indisponível".equals(response.previsao()) ? "Serviço externo instável, retornado padrão." : "";
 
             writer.writeNext(new String[] {
-                    response.idReferencia(),
                     response.texto(),
                     response.previsao(),
                     response.probabilidadeFormatada(),
@@ -151,27 +147,25 @@ public class ExternalApiService {
             });
 
         } catch (IllegalArgumentException e) {
-            log.warn("Erro de validação CSV linha ID {}: {}", id, e.getMessage());
+            log.warn("Erro de validação CSV: {}", e.getMessage());
             writer.writeNext(new String[] {
-                    id, texto, "", "", "", "", "ERRO_VALIDACAO", e.getMessage()
+                    texto, "", "", "", "", "ERRO_VALIDACAO", e.getMessage()
             });
 
         } catch (Exception e) {
-            log.error("Erro inesperado processando ID {}", id, e);
+            log.error("Erro inesperado processando: ", e);
             writer.writeNext(new String[] {
-                    id, texto, "", "", "", "", "ERRO_INTERNO", "Erro inesperado: " + e
+                    texto, "", "", "", "", "ERRO_INTERNO", "Erro inesperado: " + e
             });
         }
     }
 
     public SentimentResponse fallbackAnalisar(SentimentAnalysisRequest request, Throwable t) {
-        log.error("Fallback executado no Circuit Breaker da análise de sentimento para ID={} | erro={}",
-        request.id(), t.getMessage());
+        log.error("Fallback executado no Circuit Breaker na análise de sentimento | erro={}", t.getMessage());
 
         fallBackCounter.increment();
 
         return new SentimentResponse(
-                request.id(),
                 request.text(),
                 "indisponível",
                 "0%",

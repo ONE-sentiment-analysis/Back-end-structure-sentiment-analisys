@@ -1,8 +1,8 @@
 package br.com.one.sentiment_analysis.controller;
 
-import br.com.one.sentiment_analysis.DTO.request.SentimentAnalysisRequest;
-import br.com.one.sentiment_analysis.DTO.response.SentimentListItemResponse;
-import br.com.one.sentiment_analysis.DTO.response.SentimentResponse;
+import br.com.one.sentiment_analysis.dto.request.SentimentAnalysisRequest;
+import br.com.one.sentiment_analysis.dto.response.SentimentListItemResponse;
+import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import br.com.one.sentiment_analysis.model.avaliacao.AnaliseSentimento;
 import br.com.one.sentiment_analysis.repository.SentimentRepository;
 import br.com.one.sentiment_analysis.service.ExternalApiService;
@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -113,10 +114,10 @@ public class SentimentController {
     )
 
     public ResponseEntity<Page<SentimentListItemResponse>> procurarAvaliacoes(
-            Long idProduto,
-            @PageableDefault(size = TAMANHO_PAGINACAO) Pageable pageable) {
+            Long idAvaliacao,
+            @PageableDefault(size = TAMANHO_PAGINACAO, sort = "dataProcessamento", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<AnaliseSentimento> pageResult = repository.buscarPorIdProduto(idProduto, pageable);
+        Page<AnaliseSentimento> pageResult = repository.findAllById(idAvaliacao, pageable);
                 
         Page<SentimentListItemResponse> response = pageResult.map(SentimentListItemResponse::new);
         logger.info("Lista de avaliações retornada com sucesso.");

@@ -3,9 +3,9 @@ services:
     image: gvenzl/oracle-xe:21-slim-faststart
     container_name: oracle_container
     environment:
-      ORACLE_PASSWORD: mypassword
-      APP_USER: myuser
-      APP_USER_PASSWORD: mypassword
+      ORACLE_PASSWORD: ${APPLICATION_PASSWORD_SENTIMENT_ANALISYS}
+      APP_USER: ${DOCKER-COMPOSE_APP_USER_SENTIMENT_ANALISYS}
+      APP_USER_PASSWORD: ${DOCKER-COMPOSE_APP_USER_PASSWORD_SENTIMENT_ANALISYS}
     ports:
       - "1522:1522"
     volumes:
@@ -26,10 +26,7 @@ services:
       oracle:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle:1521/XEPDB1
-      SPRING_DATASOURCE_USERNAME: myuser
-      SPRING_DATASOURCE_PASSWORD: mypassword
+      SPRING_DATASOURCE_URL: ${APPLICATION-ORACLEXE_URL_SENTIMENT_ANALISYS}
+      SPRING_DATASOURCE_USERNAME: ${APPLICATION-ORACLEXE_USERNAME_SENTIMENT_ANALISYS}
+      SPRING_DATASOURCE_PASSWORD: ${APPLICATION_PASSWORD_SENTIMENT_ANALISYS}
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.OracleDialect
-
-volumes:
-  oracle_data:
