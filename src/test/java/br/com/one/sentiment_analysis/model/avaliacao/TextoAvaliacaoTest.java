@@ -2,8 +2,13 @@ package br.com.one.sentiment_analysis.model.avaliacao;
 
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@ActiveProfiles("test")
 public class TextoAvaliacaoTest {
 
     @Test
@@ -30,7 +35,7 @@ public class TextoAvaliacaoTest {
     @Test
     void shouldReturnExceptionWhenTextIsShort(){
         Exception ex = assertThrows(IllegalArgumentException.class,
-            () -> new TextoAvaliacao("Teste"));
+            () -> new TextoAvaliacao("Test"));
         assertEquals("O texto precisa atingir o mínimo de 5 caracteres.", ex.getMessage());
     }
 
@@ -38,6 +43,6 @@ public class TextoAvaliacaoTest {
     void shouldReturnExceptionWhenTextIsToLong(){
         Exception ex = assertThrows(IllegalArgumentException.class,
                 () -> new TextoAvaliacao("a".repeat(1001)));
-        assertEquals("O texto precisa atingir o mínimo de 1000 caracteres.", ex.getMessage());
+        assertEquals("O texto excede o limite de 1000 caracteres.", ex.getMessage());
     }
 }

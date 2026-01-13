@@ -1,10 +1,10 @@
 package br.com.one.sentiment_analysis.controller;
 
-import br.com.one.sentiment_analysis.DTO.request.UserRegisterRequest;
-import br.com.one.sentiment_analysis.DTO.request.UserLoginRequest;
-import br.com.one.sentiment_analysis.DTO.response.PessoaCadastroResponse;
-import br.com.one.sentiment_analysis.DTO.response.PessoaResponse;
-import br.com.one.sentiment_analysis.DTO.response.UserLoginResponse;
+import br.com.one.sentiment_analysis.dto.request.UserRegisterRequest;
+import br.com.one.sentiment_analysis.dto.request.UserLoginRequest;
+import br.com.one.sentiment_analysis.dto.response.PessoaCadastroResponse;
+import br.com.one.sentiment_analysis.dto.response.PessoaResponse;
+import br.com.one.sentiment_analysis.dto.response.UserLoginResponse;
 import br.com.one.sentiment_analysis.config.JwtUtil;
 import br.com.one.sentiment_analysis.exception.InvalidPasswordException;
 import br.com.one.sentiment_analysis.exception.ResourceNotFoundException;
@@ -191,7 +191,7 @@ public class AuthController {
         }
 
         if (request.password() != null && !request.password().isBlank()) {
-            user.setSenha(encoder.encode(request.password()));
+            user.setSenha(request.password());
         }
         User updatedUser = repository.save(user);
 

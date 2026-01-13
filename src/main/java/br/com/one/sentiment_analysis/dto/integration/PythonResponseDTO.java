@@ -1,4 +1,4 @@
-package br.com.one.sentiment_analysis.DTO.integration;
+package br.com.one.sentiment_analysis.dto.integration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
