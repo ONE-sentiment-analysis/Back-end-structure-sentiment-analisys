@@ -2,11 +2,15 @@ package br.com.one.sentiment_analysis.model.avaliacao;
 
 import br.com.one.sentiment_analysis.dto.response.SentimentResponse;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@ActiveProfiles("test")
 class SentimentResponseTest {
 
     @Test

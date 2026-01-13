@@ -2,8 +2,13 @@ package br.com.one.sentiment_analysis.model.avaliacao;
 
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@ActiveProfiles("test")
 public class TextoAvaliacaoTest {
 
     @Test
