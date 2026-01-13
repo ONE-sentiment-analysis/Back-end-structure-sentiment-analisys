@@ -33,4 +33,22 @@ class SentimentResponseTest {
 //        assertEquals("v1.0", response.versaoModelo());
 //        assertEquals(now, response.dataProcessamento());
 //    }
+    @Test
+    void testRecordValues() {
+        LocalDateTime now = LocalDateTime.now();
+
+        SentimentResponse response = new SentimentResponse(
+                "não é tão ruim quanto pensei",
+                "Positivo",
+                "95%",
+                "v1.0",
+                now
+        );
+
+        assertEquals("não é tão ruim quanto pensei", response.texto());
+        assertEquals("Positivo", response.previsao());
+        assertEquals("95%", response.probabilidadeFormatada());
+        assertEquals("v1.0", response.versaoModelo());
+        assertEquals(now, response.dataProcessamento());
+    }
 }
