@@ -1,12 +1,17 @@
-FROM eclipse-temurin:25-jdk-alpine
-
-LABEL authors="pablo"
-
-RUN mkdir -p /app
-
+FROM eclipse-temurin:25-jdk-alpine AS build
 WORKDIR /app
 
-COPY target/*.jar app.jar
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
+
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests
+
+FROM eclipse-temurin:25-jdk-alpine
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
