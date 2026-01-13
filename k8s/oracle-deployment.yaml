@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oracle-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oracle
+  template:
+    metadata:
+      labels:
+        app: oracle
+    spec:
+      containers:
+        - name: oracle
+          image: gvenzl/oracle-xe:21-slim-faststart
+          ports:
+            - containerPort: 1521
+          env:
+            - name: ORACLE_PASSWORD
+              value: mypassword
+            - name: APP_USER
+              value: myuser
+            - name: APP_USER_PASSWORD
+              value: mypassword
+          volumeMounts:
+            - name: oracle-data
+              mountPath: /opt/oracle/oradata
+      volumes:
+        - name: oracle-data
+          emptyDir: {}
