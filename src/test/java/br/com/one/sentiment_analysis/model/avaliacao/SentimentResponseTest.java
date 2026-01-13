@@ -14,7 +14,6 @@ class SentimentResponseTest {
         LocalDateTime now = LocalDateTime.now();
 
         SentimentResponse response = new SentimentResponse(
-                "123",
                 "não é tão ruim quanto pensei",
                 "Positivo",
                 "95%",
@@ -22,7 +21,6 @@ class SentimentResponseTest {
                 now
         );
 
-        assertEquals("123", response.idReferencia());
         assertEquals("não é tão ruim quanto pensei", response.texto());
         assertEquals("Positivo", response.previsao());
         assertEquals("95%", response.probabilidadeFormatada());
