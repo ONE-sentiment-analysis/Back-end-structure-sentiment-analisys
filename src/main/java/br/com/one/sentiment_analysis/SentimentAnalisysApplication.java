@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 @SpringBootApplication
 public class SentimentAnalisysApplication {
 	private static final Logger log = LoggerFactory.getLogger(SentimentAnalisysApplication.class);
-	static void main(String[] args) {
+	public static void main(String[] args) {
 		SpringApplication.run(SentimentAnalisysApplication.class, args);
 		log.info("Application started successfully.");
 		System.out.println("Server running on http://localhost:8080");

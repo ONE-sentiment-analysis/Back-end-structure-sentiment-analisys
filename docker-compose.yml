@@ -7,7 +7,7 @@ services:
       APP_USER: myuser
       APP_USER_PASSWORD: mypassword
     ports:
-      - "1522:1521"
+      - "1522:1522"
     volumes:
       - oracle_data:/opt/oracle/oradata
     healthcheck:

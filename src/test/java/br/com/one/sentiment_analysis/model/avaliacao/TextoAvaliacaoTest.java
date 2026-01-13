@@ -1,7 +1,6 @@
-package br.com.one.sentiment_analysis.DTO.response;
+package br.com.one.sentiment_analysis.model.avaliacao;
 
 
-import br.com.one.sentiment_analysis.model.avaliacao.TextoAvaliacao;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
