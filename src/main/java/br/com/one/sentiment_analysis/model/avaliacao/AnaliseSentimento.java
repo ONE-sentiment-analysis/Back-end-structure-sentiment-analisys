@@ -41,9 +41,10 @@ public class AnaliseSentimento {
     ) {
         if (sentimento == null) {
             this.previsao = TipoSentimento.NEUTRO;
+        } else {
+            this.previsao = sentimento;
         }
 
-        this.previsao = sentimento;
         this.probabilidade = probabilidade;
         this.dataProcessamento = dataProcessamento;
     }
