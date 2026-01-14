@@ -78,12 +78,6 @@ public class ExternalApiService {
                 LocalDateTime.now()
         );
 
-        entidade.registrarResultado(
-                TipoSentimento.valueOf(pythonResponse.sentiment().toUpperCase()),
-                new Probabilidade(pythonResponse.probability()),
-                LocalDateTime.now()
-        );
-
         repository.saveAndFlush(entidade);
 
         log.info("Análise de sentimento concluída com sucesso");
