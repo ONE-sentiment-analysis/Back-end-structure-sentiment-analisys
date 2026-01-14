@@ -24,23 +24,27 @@ public class AnaliseSentimento {
     @Embedded
     private Probabilidade probabilidade;
 
-    private String versaoModelo;
+    @Enumerated(EnumType.STRING)
+    private VersaoModelo versaoModelo;
 
     private LocalDateTime dataProcessamento;
 
-    public AnaliseSentimento(TextoAvaliacao texto) {
+    public AnaliseSentimento(TextoAvaliacao texto, VersaoModelo versaoModelo) {
         this.texto = texto;
+        this.versaoModelo = versaoModelo;
     }
 
-    public void registrarResultado(TipoSentimento sentimento, Probabilidade probabilidade,
-                                   String versaoModelo, LocalDateTime dataProcessamento) {
+    public void registrarResultado(
+            TipoSentimento sentimento,
+            Probabilidade probabilidade,
+            LocalDateTime dataProcessamento
+    ) {
         if (sentimento == null) {
             this.previsao = TipoSentimento.NEUTRO;
         }
 
         this.previsao = sentimento;
         this.probabilidade = probabilidade;
-        this.versaoModelo = versaoModelo;
         this.dataProcessamento = dataProcessamento;
     }
 }
