@@ -57,13 +57,13 @@ public class ExternalApiService {
         PythonResponseDTO pythonResponse = externalApiService.analisar(pythonRequest);
 
         var entidade = new AnaliseSentimento(
-                new TextoAvaliacao(request.text())
+                new TextoAvaliacao(request.text()),
+                VersaoModelo.valueOf(request.model())
         );
 
         entidade.registrarResultado(
                 TipoSentimento.valueOf(pythonResponse.sentiment().toUpperCase()),
                 new Probabilidade(pythonResponse.probability()),
-                pythonResponse.modelVersion(),
                 LocalDateTime.now()
         );
 
