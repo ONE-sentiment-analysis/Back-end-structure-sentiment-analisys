@@ -1,9 +1,9 @@
 package br.com.one.sentiment_analysis.config;
 
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,13 +33,11 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
 
-                // H2 Console
                 .requestMatchers("/h2-console/**").permitAll()
-                    // Swagger
+                    .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                    .requestMatchers("/error").permitAll()
                     .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-
-                    // Rotas públicas
                 .requestMatchers(
                     "/api/v1/public/**",
                         "/actuator/health",
@@ -49,17 +47,13 @@ public class SecurityConfig {
                 ).permitAll()
 
                 .requestMatchers(HttpMethod.GET,
-                    "/api/v1/sentiment"
+                    "/api/v1/sentiment/**"
                 ).permitAll()
 
                 .requestMatchers(HttpMethod.POST,
                     "/api/v1/sentiment/**"
                 ).permitAll()
 
-                // Rotas protegidas
-//                .requestMatchers("/api/v1/**").authenticated()
-
-                // Qualquer outra rota
                 .anyRequest().authenticated()
             );
 

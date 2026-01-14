@@ -11,8 +11,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,10 +23,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+
 import org.slf4j.Logger;
 
 @RestController
@@ -66,7 +67,7 @@ public class SentimentController {
     }
 
     @PostMapping(value = "/batch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Análise em lote via CSV", description = "Recebe um CSV (colunas: id, texto, versão do modelo) e retorna um CSV com as análises.")
+    @Operation(summary = "Análise em lote via CSV", description = "Recebe um CSV (colunas: texto, versão do modelo) e retorna um CSV com as análises.")
     @ApiResponse(
             responseCode = "200",
             description = "Arquivo processado com sucesso",
@@ -74,14 +75,30 @@ public class SentimentController {
                     mediaType = "text/csv",
                     examples = @ExampleObject(
                             value = """
-                                    ID Referencia,Texto,Previsao,Probabilidade,Versao Modelo,Data Processamento,Status,Detalhe do Erro
-                                    prod_1_review_100,Produto excelente,POSITIVO,0.98,v1.5,2025-01-06T10:00:00,SUCESSO,
-                                    prod_1_review_101,Nao gostei,NEGATIVO,0.85,v1.5,2025-01-06T10:00:05,SUCESSO,
-                                    123,Texto muito curto,,,,ERRO_VALIDACAO,O ID '123' está fora do padrão esperado"""
+                                    Texto,Previsao,Probabilidade,Versao Modelo,Data Processamento,Status,Detalhe do Erro
+                                    Produto excelente,POSITIVO,0.98,v1.5,2025-01-06T10:00:00,SUCESSO,
+                                    Nao gostei,NEGATIVO,0.85,v1.5,2025-01-06T10:00:05,SUCESSO,
+                                    Texto muito curto,,,,ERRO_VALIDACAO"""
                     )
             )
     )
-    public ResponseEntity<StreamingResponseBody> analisarEmLote(@RequestParam("file") @NotNull @Size(max = 10 * 1024 * 1024) MultipartFile file) {
+    public ResponseEntity<StreamingResponseBody> analisarEmLote(MultipartHttpServletRequest request) {
+        Iterator<String> iterator = request.getFileNames();
+        if (!iterator.hasNext()) {
+            throw new IllegalArgumentException("Nenhum arquivo foi enviado na requisição.");
+        }
+
+        String keyName = iterator.next();
+        MultipartFile file = request.getFile(keyName);
+
+        if (file == null) {
+            throw new IllegalArgumentException("Arquivo inválido ou nulo.");
+        }
+
+        if (file.getSize() > 10 * 1024 * 1024) {
+            throw new IllegalArgumentException("O arquivo excede o tamanho máximo permitido de 10MB.");
+        }
+
         StreamingResponseBody stream = outputStream -> {
             try (InputStream inputStream = file.getInputStream()) {
                 sentimentService.processarCsv(inputStream, outputStream);
@@ -89,7 +106,6 @@ public class SentimentController {
                 logger.warn("Download cancelado ou interrompido pelo cliente: {}", e.getMessage());
             }
         };
-
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=analise_sentimentos_resultado.csv");
