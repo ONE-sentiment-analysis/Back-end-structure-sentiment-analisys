@@ -23,12 +23,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 import org.slf4j.Logger;
 
@@ -82,21 +80,9 @@ public class SentimentController {
                     )
             )
     )
-    public ResponseEntity<StreamingResponseBody> analisarEmLote(MultipartHttpServletRequest request) {
-        Iterator<String> iterator = request.getFileNames();
-        if (!iterator.hasNext()) {
-            throw new IllegalArgumentException("Nenhum arquivo foi enviado na requisição.");
-        }
-
-        String keyName = iterator.next();
-        MultipartFile file = request.getFile(keyName);
-
-        if (file == null) {
-            throw new IllegalArgumentException("Arquivo inválido ou nulo.");
-        }
-
-        if (file.getSize() > 10 * 1024 * 1024) {
-            throw new IllegalArgumentException("O arquivo excede o tamanho máximo permitido de 10MB.");
+    public ResponseEntity<StreamingResponseBody> analisarEmLote(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("O arquivo não pode estar vazio.");
         }
 
         StreamingResponseBody stream = outputStream -> {
