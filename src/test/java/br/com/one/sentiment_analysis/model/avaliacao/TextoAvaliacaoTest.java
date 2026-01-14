@@ -1,7 +1,10 @@
 package br.com.one.sentiment_analysis.model.avaliacao;
 
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -11,38 +14,56 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 public class TextoAvaliacaoTest {
 
-    @Test
-    void shouldReturnValidText(){
-        TextoAvaliacao texto = new TextoAvaliacao("Teste feito com Junit");
-        assertEquals("Teste feito com Junit", texto.getValor());
-        assertEquals("Teste feito com Junit", texto.toString());
+    @ParameterizedTest
+    @ValueSource(ints = {5, 6, 500, 999, 1000})
+    @DisplayName("Deve criar texto válido para limites exatos (5 e 1000) e valores intermediários")
+    void textoAvaliacao_cenario1(int length) {
+        String text = "a".repeat(length);
+
+        TextoAvaliacao textoAvaliacao = new TextoAvaliacao(text);
+
+        assertNotNull(textoAvaliacao);
+        assertEquals(text, textoAvaliacao.getValor());
     }
 
     @Test
-    void shouldReturnExceptionWhenTextIsNull(){
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> new TextoAvaliacao(null));
-        assertEquals("O texto não pode ser nulo ou vazio.", ex.getMessage());
-    }
+    @DisplayName("Deve lançar exceção para textos abaixo do limite mínimo (< 5)")
+    void textoAvaliacao_cenario2() {
+        String text = "a".repeat(4);
 
-    @Test
-    void shouldRetunExceptionWhenTextIsEmpty(){
         Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> new TextoAvaliacao(" "));
-        assertEquals("O texto não pode ser nulo ou vazio.", ex.getMessage());
-    }
+                () -> new TextoAvaliacao(text));
 
-    @Test
-    void shouldReturnExceptionWhenTextIsShort(){
-        Exception ex = assertThrows(IllegalArgumentException.class,
-            () -> new TextoAvaliacao("Test"));
         assertEquals("O texto precisa atingir o mínimo de 5 caracteres.", ex.getMessage());
     }
 
     @Test
-    void shouldReturnExceptionWhenTextIsToLong(){
+    @DisplayName("Deve lançar exceção para textos acima do limite máximo (> 1000)")
+    void textoAvaliacao_cenario3() {
+        String text = "a".repeat(1001);
+
         Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> new TextoAvaliacao("a".repeat(1001)));
+                () -> new TextoAvaliacao(text));
+
         assertEquals("O texto excede o limite de 1000 caracteres.", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando o texto for nulo")
+    void textoAvaliacao_cenario4() {
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> new TextoAvaliacao(null));
+
+        assertEquals("O texto não pode ser nulo ou vazio.", ex.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    @DisplayName("Deve lançar exceção para textos vazios ou em branco")
+    void textoAvaliacao_cenario5(String invalidText) {
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> new TextoAvaliacao(invalidText));
+
+        assertEquals("O texto não pode ser nulo ou vazio.", ex.getMessage());
     }
 }
