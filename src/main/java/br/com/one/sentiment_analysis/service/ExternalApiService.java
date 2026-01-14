@@ -52,13 +52,30 @@ public class ExternalApiService {
 
         log.info("Iniciando análise");
 
+        var entidade = new AnaliseSentimento(
+                new TextoAvaliacao(request.text()),
+                VersaoModelo.fromString(request.model())
+        );
+
         PythonRequestDTO pythonRequest = new PythonRequestDTO(request.text(), request.model());
 
         PythonResponseDTO pythonResponse = externalApiService.analisar(pythonRequest);
 
-        var entidade = new AnaliseSentimento(
-                new TextoAvaliacao(request.text()),
-                VersaoModelo.valueOf(request.model())
+        String sentimento = pythonResponse.sentiment().toUpperCase();
+        TipoSentimento sentimentoConvertido;
+
+        if ("POSITIVE".equals(sentimento)) {
+            sentimentoConvertido = TipoSentimento.POSITIVO;
+        } else if ("NEGATIVE".equals(sentimento)) {
+            sentimentoConvertido = TipoSentimento.NEGATIVO;
+        } else {
+            sentimentoConvertido = TipoSentimento.NEUTRO;
+        }
+
+        entidade.registrarResultado(
+                sentimentoConvertido,
+                new Probabilidade(pythonResponse.probability()),
+                LocalDateTime.now()
         );
 
         entidade.registrarResultado(
