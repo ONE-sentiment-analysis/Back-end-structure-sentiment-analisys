@@ -53,7 +53,7 @@ public class SecurityConfig {
                 ).permitAll()
 
                 .requestMatchers(HttpMethod.POST,
-                    "/api/v1/sentiment"
+                    "/api/v1/sentiment/**"
                 ).permitAll()
 
                 // Rotas protegidas
