@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -39,13 +40,22 @@ public class AnaliseSentimento {
             Probabilidade probabilidade,
             LocalDateTime dataProcessamento
     ) {
-        if (sentimento == null) {
-            this.previsao = TipoSentimento.NEUTRO;
-        } else {
-            this.previsao = sentimento;
+        if (probabilidade == null) {
+            throw new IllegalArgumentException("Probabilidade não pode ser nula");
         }
+
+        if (dataProcessamento == null) {
+            throw new IllegalArgumentException("Data de processamento não pode ser nula");
+        }
+
+        this.previsao = Objects.requireNonNullElse(sentimento, TipoSentimento.NEUTRO);
 
         this.probabilidade = probabilidade;
         this.dataProcessamento = dataProcessamento;
+    }
+
+    public void atualizarAvaliacao (TextoAvaliacao texto, VersaoModelo versaoModelo) {
+        this.texto = texto;
+        this.versaoModelo = versaoModelo;
     }
 }
