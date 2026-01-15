@@ -3,10 +3,9 @@ package br.com.one.sentiment_analysis.model.avaliacao;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum VersaoModelo {
-    RANDOM_FOREST("RandomForestClassifier"),
-    DECISION_TREE("DecisionTreeClassifier"),
-    LOGISTIC_REGRESSION("LogisticRegression"),
-    MULTINOMIAL_NB("MultinomialNB");
+    RANDOM_FOREST("rf"),
+    LOGISTIC_REGRESSION("lr"),
+    MULTINOMIAL_NB("nb");
 
     private final String pythonModelName;
 
