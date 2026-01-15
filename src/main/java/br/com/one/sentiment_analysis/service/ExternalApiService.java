@@ -14,6 +14,8 @@ import io.github.resilience4j.retry.annotation.Retry;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -32,6 +34,9 @@ public class ExternalApiService {
     private final SentimentRepository repository;
     private final Counter fallBackCounter;
 
+    @Autowired
+    @Lazy
+    private ExternalApiService self;
 
     public ExternalApiService(IExternalApiService externalApiService,
                               SentimentRepository repository,
@@ -113,7 +118,7 @@ public class ExternalApiService {
 
                 while ((nextLine = csvReader.readNext()) != null) {
                     if (nextLine.length < 2) {
-                        writer.writeNext(new String[] {"", "", "", "", "", "", "ERRO_FORMATO", "Linha mal formatada ou vazia"});
+                        writer.writeNext(new String[] {"ERRO_FORMATO", "Linha mal formatada ou vazia"});
                         continue;
                     }
 
@@ -142,7 +147,7 @@ public class ExternalApiService {
         try {
             SentimentAnalysisRequest request = new SentimentAnalysisRequest(texto, modelVersion);
 
-            SentimentResponse response = this.analisar(request);
+            SentimentResponse response = self.analisar(request);
 
             String status = "indisponível".equals(response.previsao()) ? "AVISO_FALLBACK" : "SUCESSO";
             String msgErro = "indisponível".equals(response.previsao()) ? "Serviço externo instável, retornado padrão." : "";
