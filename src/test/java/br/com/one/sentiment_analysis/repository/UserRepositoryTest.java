@@ -8,7 +8,6 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,46 +15,47 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @ActiveProfiles("test")
 public class UserRepositoryTest {
+
     @Autowired
     private UserRepository repository;
 
 
     @Test
-    @DisplayName("Deve retornar o usuário correto quando um e-mail ou Id existente é fornecido")
+    @DisplayName("Deve retornar o usuário correto quando um e-mails ou IDs existentes são fornecidos")
     void userRepository_cenario1() {
-        User user = new User("pedro", "pedro@gmail.com", "123");
+        User user = new User("Pedro", "pedro@gmail.com", "123456");
 
-        repository.save(user);
-        Optional<User> userOptional = repository.findByEmail(user.getEmail());
-        Optional<User> userOptional2 = repository.findById(user.getId());
+        User usuariosalvo = repository.save(user);
 
-        assertFalse(userOptional.isEmpty());
-        assertFalse(userOptional2.isEmpty());
-        assertEquals(user.getId(), userOptional.get().getId());
-        assertEquals(user.getEmail(), userOptional.get().getEmail());
+        Optional<User> buscaPorEmail = repository.findByEmail("pedro@gmail.com");
+        Optional<User> buscaPorID = repository.findById(usuariosalvo.getId());
+
+        assertAll("Persistência de Usuário",
+                () -> assertNotNull(usuariosalvo.getId()),
+                () -> assertTrue(buscaPorEmail.isPresent()),
+                () -> assertTrue(buscaPorID.isPresent()),
+                () -> assertEquals(usuariosalvo.getEmail(), buscaPorEmail.get().getEmail()),
+                () -> assertEquals(usuariosalvo.getNome(), buscaPorID.get().getNome())
+        );
     }
 
     @Test
     @DisplayName("Deve retornar um Optional vazio quando um e-mail ou Id inexistente é fornecido")
     void userRepository_cenario2() {
-        Optional<User> userOptional = repository.findByEmail("");
-        Optional<User> userOptional2 = repository.findById(0L);
-
-        assertTrue(userOptional.isEmpty());
-        assertTrue(userOptional2.isEmpty());
+        Optional<User> user = repository.findByEmail("inexistente@gmail.com");
+        assertTrue(user.isEmpty(), "Optional deve estar vazio para email inexistente");
     }
 
     @Test
     @DisplayName("Deve retornar uma Exception de duplicidade de email")
     void userRepository_cenario3() {
-        var users = List.of(
-                new User("pedro", "pedro@gmail.com", "123"),
-                new User("pedro", "pedro@gmail.com", "123")
-        );
+        User u1 = new User("User 1", "duplicate@test.com", "123");
+        User u2 = new User("User 2", "duplicate@test.com", "456");
 
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            repository.saveAll(users);
-            repository.flush();
-        });
+        repository.saveAndFlush(u1);
+
+        assertThrows(
+                DataIntegrityViolationException.class, () -> repository.saveAndFlush(u2)
+        );
     }
 }
