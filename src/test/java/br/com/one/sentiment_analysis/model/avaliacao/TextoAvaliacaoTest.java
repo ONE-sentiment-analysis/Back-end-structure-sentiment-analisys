@@ -22,17 +22,21 @@ public class TextoAvaliacaoTest {
 
         TextoAvaliacao textoAvaliacao = new TextoAvaliacao(text);
 
-        assertNotNull(textoAvaliacao);
-        assertEquals(text, textoAvaliacao.getValor());
+        assertAll("Validar criação bem-sucedida",
+                () -> assertNotNull(textoAvaliacao),
+                () -> assertEquals(text, textoAvaliacao.getValor()),
+                () -> assertEquals(text, textoAvaliacao.toString(), "toString deve retornar o valor original")
+        );
     }
 
     @Test
     @DisplayName("Deve lançar exceção para textos abaixo do limite mínimo (< 5)")
     void textoAvaliacao_cenario2() {
-        String text = "a".repeat(4);
+        String text = "abcd";
 
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> new TextoAvaliacao(text));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class, () -> new TextoAvaliacao(text)
+        );
 
         assertEquals("O texto precisa atingir o mínimo de 5 caracteres.", ex.getMessage());
     }
@@ -42,8 +46,9 @@ public class TextoAvaliacaoTest {
     void textoAvaliacao_cenario3() {
         String text = "a".repeat(1001);
 
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> new TextoAvaliacao(text));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class, () -> new TextoAvaliacao(text)
+        );
 
         assertEquals("O texto excede o limite de 1000 caracteres.", ex.getMessage());
     }
@@ -58,12 +63,10 @@ public class TextoAvaliacaoTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", "   "})
-    @DisplayName("Deve lançar exceção para textos vazios ou em branco")
-    void textoAvaliacao_cenario5(String invalidText) {
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> new TextoAvaliacao(invalidText));
-
+    @ValueSource(strings = {"", "   ", "\t", "\n"})
+    @DisplayName("Deve rejeitar textos em branco")
+    void deveRejeitarNulosOuBrancos(String invalidText) {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new TextoAvaliacao(invalidText));
         assertEquals("O texto não pode ser nulo ou vazio.", ex.getMessage());
     }
 }
