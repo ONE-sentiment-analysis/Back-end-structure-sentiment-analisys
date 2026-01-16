@@ -60,4 +60,14 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiErrorModel> handleMaxSizeException(org.springframework.web.multipart.MaxUploadSizeExceededException ex) {
+        ApiErrorModel error = new ApiErrorModel(
+                HttpStatus.CONTENT_TOO_LARGE.value(),
+                "Arquivo muito grande",
+                Map.of("error", "O arquivo excede o limite máximo permitido de 10MB")
+        );
+        return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE).body(error);
+    }
 }

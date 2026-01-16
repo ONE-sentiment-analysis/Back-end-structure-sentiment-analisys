@@ -14,12 +14,9 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 public interface IExternalApiService {
 
     @PostMapping(
-        value = "/analisar",
-        consumes = "application/json"
+            value = "/api/predict",
+            consumes = "application/json"
     )
     PythonResponseDTO analisar(@RequestBody PythonRequestDTO request);
 
 }
-
-
-

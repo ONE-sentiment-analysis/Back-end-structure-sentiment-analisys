@@ -14,7 +14,6 @@ public class ApiErrorModel {
     private String error;
     private Map<String, String> messages;
 
-    // Construtor principal
     public ApiErrorModel(int statusCode, String error, Map<String, String> messages) {
         this.timestamp = LocalDateTime.now();
         this.statusCode = statusCode;

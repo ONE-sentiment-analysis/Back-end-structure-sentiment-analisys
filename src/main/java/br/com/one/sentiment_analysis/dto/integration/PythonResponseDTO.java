@@ -1,11 +1,19 @@
 package br.com.one.sentiment_analysis.dto.integration;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record PythonResponseDTO(
-        @JsonProperty("model_version") String modelVersion,
-        @JsonProperty("processed_at") String processedAt,
-        @JsonProperty("sentiment") String sentiment,
-        @JsonProperty("probability") double probability
-) {}
+        @JsonAlias("model")
+        @JsonProperty("model_version")
+        String modelVersion,
 
+        @JsonAlias("score")
+        @JsonProperty("probability")
+        double probability,
+
+        @JsonProperty("sentiment")
+        String sentiment
+) {}
