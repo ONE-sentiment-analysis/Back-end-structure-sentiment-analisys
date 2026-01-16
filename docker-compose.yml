@@ -1,33 +1,40 @@
 services:
-  oracle:
-    image: gvenzl/oracle-xe:21-slim-faststart
-    container_name: oracle_container
+  postgres:
+    image: postgres:18
+    container_name: postgres_container
     environment:
-      ORACLE_PASSWORD: ${APPLICATION_PASSWORD_SENTIMENT_ANALISYS}
-      APP_USER: ${DOCKER-COMPOSE_APP_USER_SENTIMENT_ANALISYS}
-      APP_USER_PASSWORD: ${DOCKER-COMPOSE_APP_USER_PASSWORD_SENTIMENT_ANALISYS}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "1522:1522"
+      - "${DB_PORT}:5432"
     volumes:
-      - oracle_data:/opt/oracle/oradata
+      - postgres_data:/var/lib/postgresql
     healthcheck:
-      test: [ "CMD", "healthcheck.sh" ]
-      interval: 20s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 10s
 
   springboot-app:
     build: .
     container_name: springboot_container
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:8080"
     depends_on:
-      oracle:
+      postgres:
         condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      API_PYTHON_URL: http://host.docker.internal:8000
-      SPRING_DATASOURCE_URL: ${APPLICATION-ORACLEXE_URL_SENTIMENT_ANALISYS}
-      SPRING_DATASOURCE_USERNAME: ${APPLICATION-ORACLEXE_USERNAME_SENTIMENT_ANALISYS}
-      SPRING_DATASOURCE_PASSWORD: ${APPLICATION_PASSWORD_SENTIMENT_ANALISYS}
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.OracleDialect
+      APPLICATION_NAME_SENTIMENT_ANALISYS: ${APPLICATION_NAME}
+
+      API_PYTHON_URL: ${PYTHON_API_URL}
+
+      JDBC_DATABASE_URL: ${JDBC_URL}
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+
+volumes:
+  postgres_data:

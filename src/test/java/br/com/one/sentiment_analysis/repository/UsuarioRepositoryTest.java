@@ -1,6 +1,6 @@
 package br.com.one.sentiment_analysis.repository;
 
-import br.com.one.sentiment_analysis.model.user.User;
+import br.com.one.sentiment_analysis.model.user.Usuario;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +14,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
-public class UserRepositoryTest {
+public class UsuarioRepositoryTest {
 
     @Autowired
-    private UserRepository repository;
+    private UsuarioRepository repository;
 
 
     @Test
     @DisplayName("Deve retornar o usuário correto quando um e-mails ou IDs existentes são fornecidos")
     void userRepository_cenario1() {
-        User user = new User("Pedro", "pedro@gmail.com", "123456");
+        Usuario usuario = new Usuario("Pedro", "pedro@gmail.com", "123456");
 
-        User usuariosalvo = repository.save(user);
+        Usuario usuariosalvo = repository.save(usuario);
 
-        Optional<User> buscaPorEmail = repository.findByEmail("pedro@gmail.com");
-        Optional<User> buscaPorID = repository.findById(usuariosalvo.getId());
+        Optional<Usuario> buscaPorEmail = repository.findByEmail("pedro@gmail.com");
+        Optional<Usuario> buscaPorID = repository.findById(usuariosalvo.getId());
 
         assertAll("Persistência de Usuário",
                 () -> assertNotNull(usuariosalvo.getId()),
@@ -42,15 +42,15 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("Deve retornar um Optional vazio quando um e-mail ou Id inexistente é fornecido")
     void userRepository_cenario2() {
-        Optional<User> user = repository.findByEmail("inexistente@gmail.com");
+        Optional<Usuario> user = repository.findByEmail("inexistente@gmail.com");
         assertTrue(user.isEmpty(), "Optional deve estar vazio para email inexistente");
     }
 
     @Test
     @DisplayName("Deve retornar uma Exception de duplicidade de email")
     void userRepository_cenario3() {
-        User u1 = new User("User 1", "duplicate@test.com", "123");
-        User u2 = new User("User 2", "duplicate@test.com", "456");
+        Usuario u1 = new Usuario("Usuario 1", "duplicate@test.com", "123");
+        Usuario u2 = new Usuario("Usuario 2", "duplicate@test.com", "456");
 
         repository.saveAndFlush(u1);
 
