@@ -10,8 +10,8 @@ import br.com.one.sentiment_analysis.exception.InvalidPasswordException;
 import br.com.one.sentiment_analysis.exception.ResourceNotFoundException;
 import br.com.one.sentiment_analysis.exception.UserAlreadyExistException;
 import br.com.one.sentiment_analysis.exception.UserNotFoundException;
-import br.com.one.sentiment_analysis.model.user.User;
-import br.com.one.sentiment_analysis.repository.UserRepository;
+import br.com.one.sentiment_analysis.model.user.Usuario;
+import br.com.one.sentiment_analysis.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -41,7 +41,7 @@ import java.util.Optional;
 public class AuthController {
 
     @Autowired
-    private UserRepository repository;
+    private UsuarioRepository repository;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
@@ -67,9 +67,9 @@ public class AuthController {
             log.warn("Cadastro negado: email já existente {}", request.email());
             throw new UserAlreadyExistException("Email já cadastrado: "+ request.email());
         }
-        User novaPessoa = new User(request.name(), request.email(), encoder.encode(request.password()));
+        Usuario novaPessoa = new Usuario(request.name(), request.email(), encoder.encode(request.password()));
 
-        User pessoaSalva = repository.save(novaPessoa);
+        Usuario pessoaSalva = repository.save(novaPessoa);
 
         PessoaCadastroResponse response = new PessoaCadastroResponse(
                 pessoaSalva.getId(),
@@ -97,20 +97,20 @@ public class AuthController {
     )
     public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request){
         log.info("Tentativa de login para email: {}", request.email());
-        User userExist = repository.findByEmail(request.email())
+        Usuario usuarioExist = repository.findByEmail(request.email())
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
 
-        if (!encoder.matches(request.password(), userExist.getSenha())) {
+        if (!encoder.matches(request.password(), usuarioExist.getSenha())) {
             log.warn("Senha incorreta para usuário {}", request.email());
             throw new InvalidPasswordException("Senha incorreta");
         }
 
-        String token = JwtUtil.generateToken(userExist.getEmail());
-        log.info("Login realizado com sucesso para {} em {}", userExist.getEmail(), LocalDateTime.now());
+        String token = JwtUtil.generateToken(usuarioExist.getEmail());
+        log.info("Login realizado com sucesso para {} em {}", usuarioExist.getEmail(), LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new UserLoginResponse(
-                userExist.getEmail(),
+                usuarioExist.getEmail(),
                 token
         ));
     }
@@ -136,7 +136,7 @@ public class AuthController {
     public ResponseEntity<Page<PessoaResponse>> listarPessoas(
             @PageableDefault(size = 15, sort = "nome") Pageable pageable) {
         log.debug("Listando usuários com paginação: {}", pageable);
-        Page<User> paginaPessoas = repository.findAll(pageable);
+        Page<Usuario> paginaPessoas = repository.findAll(pageable);
 
         Page<PessoaResponse> response = paginaPessoas.map(pessoa ->
                 new PessoaResponse(
@@ -165,7 +165,7 @@ public class AuthController {
     )
     public ResponseEntity<PessoaResponse> buscarPorId(@PathVariable Long id) {
 
-        User pessoa = repository.findById(id)
+        Usuario pessoa = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pessoa não encontrada com ID: " + id));
 
         PessoaResponse response = new PessoaResponse(
@@ -179,27 +179,27 @@ public class AuthController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUserById(@PathVariable Long id, @RequestBody UserRegisterRequest request) {
-        User user = repository.findById(id)
+        Usuario usuario = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
 
         if(request.email() != null) {
-            user.setEmail(request.email());
+            usuario.setEmail(request.email());
         }
 
         if (request.name() != null) {
-            user.setNome(request.name());
+            usuario.setNome(request.name());
         }
 
         if (request.password() != null && !request.password().isBlank()) {
-            user.setSenha(request.password());
+            usuario.setSenha(request.password());
         }
-        User updatedUser = repository.save(user);
+        Usuario updatedUsuario = repository.save(usuario);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("id", updatedUser.getId());
-        response.put("nome", updatedUser.getNome());
-        response.put("email", updatedUser.getEmail());
-        response.put("avaliacoes", updatedUser.getAvaliacoes().size());
+        response.put("id", updatedUsuario.getId());
+        response.put("nome", updatedUsuario.getNome());
+        response.put("email", updatedUsuario.getEmail());
+        response.put("avaliacoes", updatedUsuario.getAvaliacoes().size());
 
         return ResponseEntity.ok(response);
     }
@@ -214,7 +214,7 @@ public class AuthController {
     )
     public ResponseEntity<String> deleteUserById(@PathVariable("id") long userId){
         log.info("Tentativa de exclusão do usuário ID {}", userId);
-        Optional<User> existUser = repository.findById(userId);
+        Optional<Usuario> existUser = repository.findById(userId);
         if (existUser.isPresent()) {
             repository.deleteById(userId);
             log.info("Usuário ID {} deletado com sucesso", userId);

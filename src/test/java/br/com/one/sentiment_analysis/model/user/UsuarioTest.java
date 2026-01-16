@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class UserTest {
+class UsuarioTest {
 
     private static ValidatorFactory factory;
     private static Validator validator;
@@ -43,9 +43,9 @@ class UserTest {
     @Test
     @DisplayName("Deve passar na validação com todos os dados corretos")
     void user_cenario1() {
-        User user = new User("Carlos", "carlos@dominio.com", "segredo123");
+        Usuario usuario = new Usuario("Carlos", "carlos@dominio.com", "segredo123");
 
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        Set<ConstraintViolation<Usuario>> violations = validator.validate(usuario);
 
         assertTrue(violations.isEmpty(), "Não deveria haver erros de validação");
     }
@@ -53,64 +53,64 @@ class UserTest {
     @Test
     @DisplayName("Deve instanciar usuário corretamente usando o construtor com argumentos")
     void user_cenario2() {
-        User user = new User("João Silva", "joao@email.com", "senha123");
+        Usuario usuario = new Usuario("João Silva", "joao@email.com", "senha123");
 
-        assertAll("Estado do User",
-                () -> assertNull(user.getId(), "ID deve ser nulo antes da persistência"),
-                () -> assertEquals("João Silva", user.getNome()),
-                () -> assertEquals("joao@email.com", user.getEmail()),
-                () -> assertEquals("senha123", user.getSenha()),
-                () -> assertNotNull(user.getAvaliacoes()),
-                () -> assertTrue(user.getAvaliacoes().isEmpty())
+        assertAll("Estado do Usuario",
+                () -> assertNull(usuario.getId(), "ID deve ser nulo antes da persistência"),
+                () -> assertEquals("João Silva", usuario.getNome()),
+                () -> assertEquals("joao@email.com", usuario.getEmail()),
+                () -> assertEquals("senha123", usuario.getSenha()),
+                () -> assertNotNull(usuario.getAvaliacoes()),
+                () -> assertTrue(usuario.getAvaliacoes().isEmpty())
         );
     }
 
     @Test
     @DisplayName("Deve instanciar usuário corretamente usando construtor vazio e setters")
     void user_cenario3() {
-        User user = new User();
-        user.setNome("Maria");
-        user.setEmail("maria@email.com");
-        user.setSenha("123456");
+        Usuario usuario = new Usuario();
+        usuario.setNome("Maria");
+        usuario.setEmail("maria@email.com");
+        usuario.setSenha("123456");
 
         assertAll("Validação de Setters",
-                () -> assertEquals("Maria", user.getNome()),
-                () -> assertEquals("maria@email.com", user.getEmail()),
-                () -> assertEquals("123456", user.getSenha())
+                () -> assertEquals("Maria", usuario.getNome()),
+                () -> assertEquals("maria@email.com", usuario.getEmail()),
+                () -> assertEquals("123456", usuario.getSenha())
         );
     }
 
     @Test
     @DisplayName("Deve adicionar uma avaliação à lista do usuário")
     void user_cenario4() {
-        User user = new User("Teste", "teste@email.com", "123");
+        Usuario usuario = new Usuario("Teste", "teste@email.com", "123");
 
         AnaliseSentimento analiseMock = Mockito.mock(AnaliseSentimento.class);
 
-        user.adicionarAvaliacao(analiseMock);
+        usuario.adicionarAvaliacao(analiseMock);
 
-        assertEquals(1, user.getAvaliacoes().size());
-        assertEquals(analiseMock, user.getAvaliacoes().getFirst());
+        assertEquals(1, usuario.getAvaliacoes().size());
+        assertEquals(analiseMock, usuario.getAvaliacoes().getFirst());
     }
 
     @Test
     @DisplayName("Deve impedir adição de avaliação nula lançando exceção")
     void user_cenario5() {
-        User user = new User("Teste", "teste@email.com", "123");
+        Usuario usuario = new Usuario("Teste", "teste@email.com", "123");
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> user.adicionarAvaliacao(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> usuario.adicionarAvaliacao(null));
 
         assertEquals("A avaliação não pode ser nula", exception.getMessage());
-        assertTrue(user.getAvaliacoes().isEmpty(), "A lista deve permanecer vazia após a tentativa falha");
+        assertTrue(usuario.getAvaliacoes().isEmpty(), "A lista deve permanecer vazia após a tentativa falha");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   ", "\t", "\n"})
     @DisplayName("Deve falhar validação quando o nome ou senha estiver em branco")
     void user_cenario6(String valorInvalido) {
-        User userInvalido = new User(valorInvalido, "teste@email.com", valorInvalido);
+        Usuario usuarioInvalido = new Usuario(valorInvalido, "teste@email.com", valorInvalido);
 
-        Set<ConstraintViolation<User>> violations = validator.validate(userInvalido);
+        Set<ConstraintViolation<Usuario>> violations = validator.validate(usuarioInvalido);
         Set<String> mensagens = violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toSet());
 
         assertAll("Validação de Constraints",
@@ -123,9 +123,9 @@ class UserTest {
     @Test
     @DisplayName("Deve validar campos nome ou senha (Bean Validation)")
     void user_cenario7() {
-        User userInvalido = new User(null, "teste@email.com", null);
+        Usuario usuarioInvalido = new Usuario(null, "teste@email.com", null);
 
-        Set<ConstraintViolation<User>> violations = validator.validate(userInvalido);
+        Set<ConstraintViolation<Usuario>> violations = validator.validate(usuarioInvalido);
         Set<String> mensagens = violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toSet());
 
         assertAll("Validação de Constraints",
@@ -139,9 +139,9 @@ class UserTest {
     @ValueSource(strings = {"", "   ", "email-sem-arroba", "teste@", "teste.com", "@dominio.com", "usuario@.com"})
     @DisplayName("Deve falhar validação quando o e-mail for inválido (vazio ou formato incorreto)")
     void user_cenario8(String emailInvalido) {
-        User user = new User("Nome Válido", emailInvalido, "senha123");
+        Usuario usuario = new Usuario("Nome Válido", emailInvalido, "senha123");
 
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        Set<ConstraintViolation<Usuario>> violations = validator.validate(usuario);
 
         assertFalse(violations.isEmpty(), "Deveria haver erro de validação para o email: " + emailInvalido);
 
