@@ -34,7 +34,7 @@ Este projeto não é apenas um "leitor de texto". Ele conecta uma interface segu
 * **Resiliente:** Se a Inteligência Artificial demorar para responder, o sistema não trava; ele sabe lidar com instabilidades para que você nunca perca seu trabalho.
 * **Organizado:** Mantém um histórico de tudo o que foi analisado.
 
-### Como este repositório está organizado
+## Como este repositório está organizado?
 
 
 ```
