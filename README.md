@@ -359,30 +359,6 @@ scrape_configs:
 
 
 ---
-### Main Structure
-
-```
-src/
-├── main/
-│   ├── java/
-│   │   ├── config/        # Configurações da aplicação (Spring, beans, segurança, etc.)
-│   │   ├── controller/    # Controllers REST (endpoints da API)
-│   │   ├── dto/           # Data Transfer Objects (entrada/saída da API)
-│   │   ├── exception/     # Classes de exceção personalizadas
-│   │   ├── handler/       # Exception handlers globais (ex: @ControllerAdvice)
-│   │   ├── model/         # Entidades e modelos de domínio
-│   │   ├── repository/    # Interfaces de persistência (Spring Data JPA)
-│   │   ├── service/       # Regras de negócio e integração com API externa
-│   │   └── application/   # Classe principal (Spring Boot Application)
-│   │
-│   └── resources/         # Arquivos de configuração (application.properties, application.yml)
-│
-└── test/                  # Testes unitários e de integração
-    ├── java/              # Código de testes
-    └── resources/         # Configurações específicas para testes
-
-
-```
 
 ## Endpoints
 
