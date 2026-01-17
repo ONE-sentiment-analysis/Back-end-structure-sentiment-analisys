@@ -27,7 +27,7 @@ Sabemos que dados de clientes são sensíveis. Por isso, o sistema conta com:
 * **Cadastro seguro:** Apenas pessoas autorizadas podem entrar.
 * **Proteção de dados:** As senhas e informações são criptografadas (codificadas) para garantir privacidade total.
 
-## Por que é inovador?
+## Pontos Fortes
 
 Este projeto não é apenas um "leitor de texto". Ele conecta uma interface segura e robusta a um modelo avançado de Inteligência Artificial.
 
