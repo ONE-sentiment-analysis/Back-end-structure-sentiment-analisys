@@ -1,76 +1,230 @@
-# Sentiment Analisys API (Java + Spring)
+# Sentiment Analysis API (Java + Spring Boot)
 
-## Descrição
-Projeto desenvolvido como estrutura base para o Hackaton da ORACLE. Esta aplicação, construída com Spring Boot, tem como objetivo integrar-se a um modelo de classificação de sentimentos fornecido por uma API externa desenvolvida em Python.
+## O que é este projeto?
 
-O sistema envia textos para o modelo de Machine Learning, recebe a análise de sentimento (como positivo, negativo ou neutro) e retorna o resultado estruturado para o cliente. Essa arquitetura permite que o backend Java funcione como intermediário entre o usuário e o modelo de IA, garantindo organização, segurança e escalabilidade.
+Imagine que uma empresa recebe milhares de comentários de clientes todos os dias. Ler um por um para saber se o cliente está feliz ou insatisfeito é impossível.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)]()
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+Este sistema é uma **solução inteligente** que automatiza esse trabalho. Ele atua como um "cérebro" que lê os textos, entende a emoção por trás deles e classifica instantaneamente se o comentário é **Positivo**, **Negativo** ou **Neutro**.
 
-## Quick Start
+## O que ele faz por você?
 
-Get up and running in seconds:
+### 1. Análise Instantânea
 
-```javascript
-docker compose -up --build
-```
+Você envia uma frase ou comentário (como "Adorei o produto!") e o sistema responde na hora qual é o sentimento e com qual nível de certeza (probabilidade).
+
+### 2. Processamento em Massa (Lote)
+
+Tem uma planilha com 10.000 avaliações de produtos? Sem problemas.
+
+* Você envia o arquivo com todos os comentários.
+* O sistema processa tudo automaticamente.
+* Ele devolve um relatório organizado (em Excel ou CSV) com todas as análises prontas.
+
+### 3. Segurança Total
+
+Sabemos que dados de clientes são sensíveis. Por isso, o sistema conta com:
+
+* **Cadastro seguro:** Apenas pessoas autorizadas podem entrar.
+* **Proteção de dados:** As senhas e informações são criptografadas (codificadas) para garantir privacidade total.
+
+## Por que é inovador?
+
+Este projeto não é apenas um "leitor de texto". Ele conecta uma interface segura e robusta a um modelo avançado de Inteligência Artificial.
+
+* **Resiliente:** Se a Inteligência Artificial demorar para responder, o sistema não trava; ele sabe lidar com instabilidades para que você nunca perca seu trabalho.
+* **Organizado:** Mantém um histórico de tudo o que foi analisado.
+
+### Principais Funcionalidades
+
+#### 1. Análise de Sentimentos
+
+* **Análise Unitária:** Endpoint para analisar um único comentário. O sistema envia o texto para a API Python, interpreta a probabilidade (0 a 1) e classifica como **POSITIVO**, **NEGATIVO** ou **NEUTRO**.
+* **Fallback e Resiliência:** Implementação de **Circuit Breaker** (Resilience4j). Se a API Python estiver instável, o sistema ativa um *fallback* retornando um status de "indisponível" sem derrubar a requisição.
+* **Histórico:** Os resultados das análises são persistidos no banco de dados vinculados ao usuário.
+
+#### 2. Processamento em Lote (Batch)
+
+* **Upload de CSV:** Permite o envio de arquivos CSV contendo múltiplos textos.
+* **Exportação de Relatórios:**
+* **Streaming CSV:** Processa e retorna os resultados linha a linha via streaming para economizar memória.
+* **Relatório Excel (XLSX):** Converte o CSV processado em um arquivo Excel estilizado (cores, cabeçalhos) contendo as probabilidades e status da análise.
 
 
 
-##  Tecnologias utilizadas
+#### 3. Gestão de Usuários e Segurança
 
-- **Java 17+**
-- **Spring Boot 2.5+**
-- Spring Web
-- DevTools
-- Lombok
-- HttpClient (Java 11+)
-- Jackson (ObjectMapper)
-- JUnit + Mockito + H2
-- Resilience4j (Circuit Breaker, Retry, Rate Limiter, Bulkhead, TimeLimiter)
-- Observabilidade: Actuator + Prometheus + Grafana
-- Dockerfile e docker-compose
+* **Autenticação JWT:** Sistema completo de login e registro protegido por tokens JWT (Json Web Token).
+* **Criptografia:** Senhas dos usuários são armazenadas com criptografia BCrypt.
+* **Controle de Acesso:** Rotas protegidas exigem autenticação Bearer Token, enquanto rotas como Swagger e Actuator são públicas.
 
-## Features
+#### 4. Monitoramento e Infraestrutura
 
-- 🚀 **Performance** - Lightning fast performance
-- 🎯 **Easy to Use** - Simple and intuitive API
-- 💎 **Lightweight** - Minimal dependencies
-
-
-
-## ✅ O que já foi feito
-
-- Criação dos DTOs:
-  - `SentimentRequestModel`
-  - `SentimentResponse`
-- Controller com rota para análise de sentimento
-- Serviço responsável pela integração com a API externa em Python
-- Conversão JSON ↔ Objetos Java utilizando `ObjectMapper`
-- Exception personalizada (`ExternalApiException`) para erros de comunicação
-- Documentação com Swagger/OpenAPI
-- Teste Unitários 
-  - `JUnit + Mockito + H2 database`
-- Spring Securoty Para proteger rotas
-- Observabilidade
-  - `Actuator`
-  - `Prometheus` 
-  - `Grafana`
-  - `Actuator` 
-- Resilience4j
-  - `Circuit Breaker`
-  - `Retry`
-  - `Rate Limiter`
-  - `Bulkhead`
-  - `TimeLimiter`
-  - `Dockerfile e docker compose`
+* **Observabilidade:** Exposição de métricas via **Spring Boot Actuator** e integração com **Prometheus**.
+* **Docker:** O projeto é totalmente "dockerizado", incluindo configurações para banco de dados (PostgreSQL) e integração de rede interna.
+* **CI/CD:** Pipelines do GitHub Actions configurados para lint, build, testes e push de imagem Docker.
 
 ---
+
+### Tecnologias Utilizadas
+
+#### Core e Frameworks
+
+* **Linguagem:** Java 25 (conforme configurado no `pom.xml` e nos workflows).
+* **Framework:** Spring Boot 4.0.1.
+* **Módulos Spring:** Web, Data JPA, Security, Actuator, Validation.
+* **Cliente HTTP:** Spring Cloud OpenFeign (para comunicação com a API Python).
+
+#### Dados e Persistência
+
+* **Bancos de Dados:**
+* **PostgreSQL:** Utilizado em produção/container.
+* **H2 Database:** Utilizado para testes em memória.
+* **Oracle:** Há configurações de deployment Kubernetes para Oracle, sugerindo suporte ou migração híbrida.
+
+
+* **Migração:** Hibernate DDL Auto (update/create-drop).
+
+#### Processamento de Arquivos
+
+* **Apache POI:** Para geração e manipulação de arquivos Excel.
+* **OpenCSV:** Para leitura e escrita eficientes de arquivos CSV.
+* **Apache Tika:** Para detecção de tipos MIME de arquivos enviados.
+
+#### Resiliência e Testes
+
+* **Resilience4j:** Circuit Breaker, Retry, Rate Limiter e Bulkhead.
+* **Testes:** JUnit 5, Mockito e Spring Boot Test.
+
+#### DevOps
+
+* **Containerização:** Docker e Docker Compose.
+* **Orquestração:** Arquivos de configuração para Kubernetes (Deployments e Services).
+* **Documentação:** OpenAPI (Swagger UI).
+---
+# Arquitetura e Resiliência
+
+Esta seção detalha como o sistema foi desenhado para ser seguro, organizado e, acima de tudo, resistente a falhas.
+
+### A Arquitetura: O "Gerente do Restaurante"
+
+Imagine este software como um restaurante de alta gastronomia:
+
+1. **O Cliente (Você):** Faz o pedido (envia o texto).
+2. **O Garçom (API Java):** Recebe o pedido, verifica se você tem cadastro e organiza a solicitação. Ele não cozinha, mas garante que tudo flua bem.
+3. **O Chef Especialista (API Python):** É quem realmente coloca a mão na massa. Ele fica na cozinha (isolado) e é o único que sabe "provar" o prato e dizer se o sentimento é doce (positivo) ou amargo (negativo).
+
+A nossa arquitetura separa essas funções. Se o Chef estiver ocupado, o Garçom continua atendendo as mesas e gerenciando a fila, garantindo que o restaurante não pare.
+
+### A Resiliência: O "Sistema de Segurança"
+
+Em tecnologia, **Resiliência** é a capacidade de levar um soco e continuar de pé. O que acontece se o "Chef" (IA) desmaiar ou a cozinha pegar fogo?
+
+O sistema possui proteções automáticas, parecidas com disjuntores de energia da sua casa:
+
+* **Tentativa Automática (Retry):** Se o sistema tenta falar com a Inteligência Artificial e ela não responde na hora, ele não desiste imediatamente. Ele tenta de novo (até 3 vezes) rapidamente, pois pode ter sido apenas um "soluço" na internet.
+* **Disjuntor Inteligente (Circuit Breaker):** Se a Inteligência Artificial cair de vez, o sistema "desliga" a comunicação com ela temporariamente. Em vez de deixar você esperando eternamente por uma resposta que não virá, ele avisa imediatamente: *"O serviço está instável no momento"*. Isso impede que o sistema todo trave.
+* **Controle de Fluxo (Bulkhead):** É como limitar o número de pedidos que entram na cozinha ao mesmo tempo. Se chegarem 1.000 pedidos, o sistema só deixa passar o que a cozinha aguenta processar, evitando um colapso total.
+
+O projeto adota uma **Arquitetura em Camadas (Layered Architecture)** clássica com integração de microsserviços via comunicação síncrona, robustecida por padrões de tolerância a falhas.
+
+### 1. Desenho da Arquitetura
+
+O Backend Java atua como um **BFF (Backend for Frontend)** ou Middleware de Orquestração, isolando o cliente da complexidade do modelo de Machine Learning.
+
+```mermaid
+graph TD
+    User["Cliente / Front-end"] -->|HTTPS| AuthLayer["Security / JWT Filter"]
+    AuthLayer -->|Validado| Controller["SentimentController"]
+
+    subgraph Container [" "]
+        direction TB
+        
+        Service["ExternalApiService"]
+
+        subgraph "Mecanismos de Proteção"
+            direction RL
+            CB["Circuit Breaker"]
+            RT["Retry"]
+            BH["Bulkhead"]
+        end
+
+        Service -.-> CB
+        Service -.-> RT
+        Service -.-> BH
+    end
+
+    Controller -->|DTO| Service
+    
+    Service -->|"HTTP/Feign"| PythonAPI["API Python (IA)"]
+    Service -->|"Persistência"| DB[("PostgreSQL")]
+
+    classDef java fill:#ffe6cc,stroke:#d79b00,stroke-width:2px,color:#000;
+    
+    classDef python fill:#3776ab,stroke:#333,stroke-width:2px,color:#fff;
+    classDef db fill:#336791,stroke:#333,stroke-width:2px,color:#fff;
+    
+    classDef pattern fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5,color:#333;
+
+    classDef titleNode fill:none,stroke:none,font-weight:bold,font-size:16px,color:#000;
+
+    class Controller,Service,AuthLayer java;
+    class PythonAPI python;
+    class DB db;
+    class CB,RT,BH pattern;
+    class LayerTitle titleNode;
+```
+
+### 2. Padrões de Resiliência Implementados
+
+A estabilidade da comunicação entre o Java e o Python é garantida pela biblioteca **Resilience4j**, configurada via AOP (Aspect Oriented Programming) no serviço `ExternalApiService`.
+
+#### Circuit Breaker (Padrão Disjuntor)
+
+Impede falhas em cascata quando o serviço externo (Python) está inoperante.
+
+* **Configuração (`application.properties`):**
+* `failureRateThreshold: 50`: Se 50% das requisições falharem, o circuito abre.
+* `slidingWindowSize: 5`: Analisa as últimas 5 requisições para tomar a decisão (resposta rápida a falhas).
+* `waitDurationInOpenState: 10s`: O sistema aguarda 10 segundos antes de tentar verificar se a API Python voltou (estado Half-Open).
+
+
+* **Fallback:** O método `fallbackAnalisar` captura a exceção, incrementa uma métrica no Prometheus (`external_api_fallback_total`) e retorna um objeto `SentimentResponse` com status "indisponível", garantindo que o cliente receba uma resposta 200 OK (Degradação Graciosa).
+
+#### Retry (Tentativa de Reexecução)
+
+Lida com falhas transientes de rede.
+
+* **Configuração:**
+* `maxAttempts: 3`: Tenta a operação até 3 vezes.
+* `waitDuration: 500ms`: Pausa de meio segundo entre tentativas.
+* `retryExceptions`: Configurado para reagir a `IOException` e `TimeoutException`.
+
+
+
+#### Bulkhead (Isolamento de Recursos)
+
+Evita que o esgotamento de recursos na comunicação com a IA afete outras partes da API Java (como o Login ou Cadastro).
+
+* **Configuração:**
+* `maxConcurrentCalls: 5`: Limita a apenas 5 execuções simultâneas para o serviço externo. Se a sexta requisição chegar enquanto 5 estão processando, ela é rejeitada ou enfileirada, preservando a Thread Pool do Tomcat.
+
+
+
+### 3. Integração e Cliente HTTP
+
+* **OpenFeign:** Utilizado para abstrair as chamadas REST. A interface `IExternalApiService` define o contrato da API Python, permitindo que o código de negócio chame métodos Java simples em vez de montar requisições HTTP manuais.
+* **Tratamento de Erros:** Exceções de comunicação são capturadas e transformadas em `ExternalApiException` ou tratadas silenciosamente pelo Fallback, dependendo da criticidade.
+
+### 4. Observabilidade
+
+A arquitetura expõe métricas vitais para monitoramento da saúde da aplicação:
+
+* **Actuator + Prometheus:** Endpoints expostos para coleta de métricas (/actuator/prometheus).
+* **Métricas Personalizadas:** Contador `external_api_fallback_total` implementado para monitorar quantas vezes o sistema precisou recorrer ao plano de contingência.
 ## Configuration
 
 ### Como rodar Prometheus
-- [Instale](https://prometheus.io/download/) prometheus de acordo com OS
+- [Instale](https://prometheus.io/download/) Prometheus de acordo com OS
 - Extraia a pasta e edite prometheus.yaml
 ````
  global:
@@ -86,7 +240,7 @@ scrape_configs:
 - Rode o comando no Terminal :  prometheus.exe
 - config.file=prometheus.yml
 
-- O Pormetheus estará rodando em: http://localhost:9090
+- O Prometheus estará rodando em: http://localhost:9090
 
 
 ---
@@ -115,14 +269,14 @@ src/
 
 ```
 
-## 📡 Endpoints
+## Endpoints
 
 | Método | Rota                     | Descrição                                                                 |
 |--------|--------------------------|---------------------------------------------------------------------------|
 | POST   | `/api/v1/sentiment`             | Recebe um texto e retorna a análise de sentimento (positivo, negativo, neutro). |                              |
 | GET    | `/swagger-ui/index.html` | Interface interativa da documentação da API.                              |
 | POST   | `/api/v1/pessoas`     | Cadastra uma nova pessoa (recebe dados de cadastro, como nome).           |
-| GET    | `/api/v1/pessoas`     | Lista todas as pessoas cadastradas (paginado, ordenado por nome).         |
+| GET | `/api/v1/pessoas` | Lista todas as pessoas cadastradas (paginada, ordenada por nome).         |
 | GET    | `/api/v1/pessoas/{id}`| Busca os detalhes de uma pessoa específica pelo ID.                       |
 
 ## 📡 Exemplo de requisição
@@ -143,53 +297,27 @@ src/
 }
 ```
 
-## Security
-
-### Security Measures
-
-- 🔒 **Encryption:** All data is encrypted in transit and at rest
-- 🛡️ **Authentication:** Secure API key authentication
-- 🔍 **Validation:** Input validation and sanitization
-- 📊 **Monitoring:** Continuous security monitoring
-
-### Reporting Security Issues
-
-If you discover a security vulnerability, please:
-
-1. **Do NOT** create a public issue
-2. Email us at security@example.com
-3. Include detailed information about the vulnerability
-4. Allow time for us to address the issue before disclosure
-
-### Security Best Practices
-
-- Keep your API keys secure
-- Use HTTPS in production
-- Regularly update dependencies
-- Follow the principle of least privilege
-
-
 ## Roadmap
 
 ### Current Version (v1.0)
-- ✅ Core functionality
-- ✅ Basic API
-- ✅ Documentation
+- Core functionality
+- Basic API
+- Documentation
 
 ### Upcoming (v1.1)
-- 🔄 Performance improvements
-- 🔄 New features
-- 🔄 Bug fixes
+- Performance improvements
+- New features
+- Bug fixes
 
 ### Future (v2.0)
-- 📋 Complete rewrite
-- 📋 Breaking changes
-- 📋 New architecture
+- Complete rewrite
+- Breaking changes
+- New architecture
 
 ### Ideas
-- 💡 OCI autonomus Database
-- 💡 OCI deploy
-- 💡 Kubernetes
+- OCI Autonomous Database
+- OCI deploy
+- Kubernetes
 
 ## Team
 
