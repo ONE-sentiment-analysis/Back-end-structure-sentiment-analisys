@@ -216,6 +216,208 @@ Este projeto não é apenas um "leitor de texto". Ele conecta uma interface segu
 * **Orquestração:** Arquivos de configuração para Kubernetes (Deployments e Services).
 * **Documentação:** OpenAPI (Swagger UI).
 ---
+
+### Veja o projeto em ação
+
+Aqui está uma demonstração de como o sistema processa um comentário em tempo real e, em seguida, analisa uma planilha inteira:
+
+*(Substitua o link acima pelo caminho do seu GIF demonstrativo)*
+
+---
+
+## Visão Técnica
+
+O sistema orquestra a comunicação entre uma API Java (Spring Boot) segura e um serviço de Inteligência Artificial em Python, tudo suportado por um banco de dados PostgreSQL.
+
+Abaixo, detalhamos como configurar este ambiente, desde os pré-requisitos até a customização fina das variáveis de ambiente.
+
+### Pré-requisitos
+
+Antes de começar, certifique-se de ter as seguintes ferramentas instaladas:
+
+* **Docker & Docker Compose**: Para rodar todo o ecossistema (Banco + API) com um único comando.
+* **Java JDK 25**: Caso deseje rodar a aplicação nativamente fora do Docker.
+* **Maven**: Para compilação e gerenciamento de dependências.
+
+---
+
+### 🐳 Execução Rápida (Recomendada)
+
+A maneira mais simples de ver o projeto rodando é utilizando a containerização. O projeto já conta com um `Dockerfile` otimizado e um orquestrador `docker-compose`.
+
+1. **Clone o repositório:**
+```bash
+git clone https://github.com/seu-usuario/one-sentiment-analysis.git
+cd one-sentiment-analysis
+
+```
+
+
+2. **Configure o ambiente:**
+Crie um arquivo `.env` na raiz do projeto (baseado nas variáveis do `docker-compose.yml`) ou exporte as variáveis no seu terminal:
+```bash
+export POSTGRES_USER=seu_usuario
+export POSTGRES_PASSWORD=sua_senha
+export POSTGRES_DB=sentiment_db
+export APP_PORT=8080
+export PYTHON_API_URL=http://host.docker.internal:8585
+
+```
+
+
+3. **Suba os serviços:**
+```bash
+docker-compose up -d
+
+```
+
+
+*Isso iniciará o container do PostgreSQL (porta 5432) e da Aplicação Spring Boot (porta 8080).*
+
+---
+
+### ⚙️ Configuração Detalhada
+
+O comportamento da aplicação é controlado pelo arquivo `application.properties` e seus perfis. Você pode ajustar parâmetros críticos de resiliência e conexão.
+
+#### Perfis de Execução
+
+O projeto suporta múltiplos perfis. O padrão atual é `production`, mas você pode alternar para `postgresql` ou `test`.
+
+* **Produção (`production`):** Conecta a um banco PostgreSQL remoto (ex: Railway).
+* **Local (`postgresql`):** Ideal para desenvolvimento local com banco na máquina ou Docker.
+* **Teste (`test`):** Usa banco H2 em memória, ideal para rodar a suíte de testes JUnit.
+
+#### Variáveis de Ambiente Importantes
+
+| Variável | Descrição | Padrão/Exemplo |
+| --- | --- | --- |
+| `API_PYTHON_URL` | URL do microsserviço Python que realiza a predição. | `http://host.docker.internal:8585` |
+| `JDBC_DATABASE_URL` | String de conexão JDBC. | `jdbc:postgresql://localhost:5432/db` |
+| `PGUSER` | Usuário do banco de dados. | `postgres` |
+| `PGPASSWORD` | Senha do banco de dados. | `admin` |
+| `APPLICATION_NAME` | Nome da aplicação nos logs/métricas. | `sentiment_analisys` |
+
+#### Resiliência (Circuit Breaker)
+
+O sistema utiliza **Resilience4j** para proteger a aplicação caso a API Python falhe. As configurações padrão são:
+
+* **Threshold de Falha:** 50% (abre o circuito se metade das requisições falharem).
+* **Janela Deslizante:** 5 requisições.
+* **Tempo de Espera:** 10 segundos antes de tentar reconectar.
+
+---
+## Endpoints
+
+| Método | Rota                     | Descrição                                                                 |
+|--------|--------------------------|---------------------------------------------------------------------------|
+| POST   | `/api/v1/sentiment`             | Recebe um texto e retorna a análise de sentimento (positivo, negativo, neutro). |                              |
+| GET    | `/swagger-ui/index.html` | Interface interativa da documentação da API.                              |
+| POST   | `/api/v1/pessoas`     | Cadastra uma nova pessoa (recebe dados de cadastro, como nome).           |
+| GET | `/api/v1/pessoas` | Lista todas as pessoas cadastradas (paginada, ordenada por nome).         |
+| GET    | `/api/v1/pessoas/{id}`| Busca os detalhes de uma pessoa específica pelo ID.                       |
+
+---
+
+### 📡 Exemplos de Uso da API
+
+Após iniciar a aplicação, você pode interagir com ela via **Swagger UI** (`http://localhost:8080/swagger-ui/index.html`) ou via terminal com `curl`.
+
+#### 1. Registrar um Usuário
+
+A primeira etapa é criar uma conta, pois os endpoints de análise são protegidos.
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Admin User",
+    "email": "admin@empresa.com",
+    "password": "senhaSegura123"
+  }'
+
+```
+
+*Fonte: `AuthController.java` e `UserRegisterRequest.java*`
+
+#### 2. Realizar Login (Obter Token)
+
+Use as credenciais criadas para receber o Token JWT (Bearer Token).
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@empresa.com",
+    "password": "senhaSegura123"
+  }'
+
+```
+
+**Resposta esperada:**
+
+```json
+{
+  "email": "admin@empresa.com",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1p..."
+}
+
+```
+
+#### 3. Analisar um Sentimento
+
+Com o token em mãos, faça a análise.
+
+```bash
+curl -X POST http://localhost:8080/api/v1/sentiment \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "O atendimento foi rápido e muito eficiente!",
+    "model": "lr"
+  }'
+
+```
+
+*Opções de modelo: `lr` (LOGISTIC_REGRESSION), `nb` (MULTINOMIAL_NB), `rf` (RANDOM_FOREST).*
+
+**Resposta esperada:**
+
+```json
+{
+  "texto": "O atendimento foi rápido e muito eficiente!",
+  "previsao": "POSITIVO",
+  "probabilidadeFormatada": "98.5%",
+  "versaoModelo": "lr",
+  "dataProcessamento": "2026-01-17T14:30:00"
+}
+
+```
+
+*Fonte: `SentimentController.java` e `SentimentResponse.java*`
+
+## Configuration
+
+### Como rodar Prometheus
+- [Instale](https://prometheus.io/download/) Prometheus de acordo com OS
+- Extraia a pasta e edite prometheus.yaml
+````
+ global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'springboot'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['localhost:8080']
+````
+
+- Rode o comando no Terminal :  prometheus.exe
+- config.file=prometheus.yml
+
+- O Prometheus estará rodando em: http://localhost:9090
+---
+
 # Arquitetura e Resiliência
 
 Esta seção detalha como o sistema foi desenhado para ser seguro, organizado e, acima de tudo, resistente a falhas.
@@ -323,8 +525,6 @@ Evita que o esgotamento de recursos na comunicação com a IA afete outras parte
 * **Configuração:**
 * `maxConcurrentCalls: 5`: Limita a apenas 5 execuções simultâneas para o serviço externo. Se a sexta requisição chegar enquanto 5 estão processando, ela é rejeitada ou enfileirada, preservando a Thread Pool do Tomcat.
 
-
-
 ### 3. Integração e Cliente HTTP
 
 * **OpenFeign:** Utilizado para abstrair as chamadas REST. A interface `IExternalApiService` define o contrato da API Python, permitindo que o código de negócio chame métodos Java simples em vez de montar requisições HTTP manuais.
@@ -336,57 +536,6 @@ A arquitetura expõe métricas vitais para monitoramento da saúde da aplicaçã
 
 * **Actuator + Prometheus:** Endpoints expostos para coleta de métricas (/actuator/prometheus).
 * **Métricas Personalizadas:** Contador `external_api_fallback_total` implementado para monitorar quantas vezes o sistema precisou recorrer ao plano de contingência.
-## Configuration
-
-### Como rodar Prometheus
-- [Instale](https://prometheus.io/download/) Prometheus de acordo com OS
-- Extraia a pasta e edite prometheus.yaml
-````
- global:
-  scrape_interval: 15s
-
-scrape_configs:
-  - job_name: 'springboot'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['localhost:8080']
-````
-
-- Rode o comando no Terminal :  prometheus.exe
-- config.file=prometheus.yml
-
-- O Prometheus estará rodando em: http://localhost:9090
-
-
----
-
-## Endpoints
-
-| Método | Rota                     | Descrição                                                                 |
-|--------|--------------------------|---------------------------------------------------------------------------|
-| POST   | `/api/v1/sentiment`             | Recebe um texto e retorna a análise de sentimento (positivo, negativo, neutro). |                              |
-| GET    | `/swagger-ui/index.html` | Interface interativa da documentação da API.                              |
-| POST   | `/api/v1/pessoas`     | Cadastra uma nova pessoa (recebe dados de cadastro, como nome).           |
-| GET | `/api/v1/pessoas` | Lista todas as pessoas cadastradas (paginada, ordenada por nome).         |
-| GET    | `/api/v1/pessoas/{id}`| Busca os detalhes de uma pessoa específica pelo ID.                       |
-
-## 📡 Exemplo de requisição
-
-### **POST /sentiment**
-
-#### Body:
-```json
-{
-  "id": "prod_123_review_456",
-  "text": "Esse produto é excelente!"
-}
-
-
-{
-    "previsao": "positivo",
-    "probabilidade": 0.92
-}
-```
 
 ## Roadmap
 
@@ -394,11 +543,6 @@ scrape_configs:
 - Core functionality
 - Basic API
 - Documentation
-
-### Upcoming (v1.1)
-- Performance improvements
-- New features
-- Bug fixes
 
 ### Future (v2.0)
 - Complete rewrite
