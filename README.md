@@ -396,8 +396,6 @@ curl -X POST http://localhost:8080/api/v1/sentiment \
 
 *Fonte: `SentimentController.java` e `SentimentResponse.java*`
 
-## Configuration
-
 ### Como rodar Prometheus
 - [Instale](https://prometheus.io/download/) Prometheus de acordo com OS
 - Extraia a pasta e edite prometheus.yaml
