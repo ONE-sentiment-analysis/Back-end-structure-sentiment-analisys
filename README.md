@@ -276,7 +276,7 @@ docker-compose up -d
 
 ---
 
-### ⚙️ Configuração Detalhada
+### Configuração Detalhada
 
 O comportamento da aplicação é controlado pelo arquivo `application.properties` e seus perfis. Você pode ajustar parâmetros críticos de resiliência e conexão.
 
@@ -319,7 +319,7 @@ O sistema utiliza **Resilience4j** para proteger a aplicação caso a API Python
 
 ---
 
-### 📡 Exemplos de Uso da API
+### Exemplos de Uso da API
 
 Após iniciar a aplicação, você pode interagir com ela via **Swagger UI** (`http://localhost:8080/swagger-ui/index.html`) ou via terminal com `curl`.
 
