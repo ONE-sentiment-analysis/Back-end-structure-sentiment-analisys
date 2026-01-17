@@ -65,7 +65,7 @@ Este projeto não é apenas um "leitor de texto". Ele conecta uma interface segu
 
 ---
 
-### 🛠️ Tecnologias Utilizadas
+### Tecnologias Utilizadas
 
 #### Core e Frameworks
 
@@ -101,11 +101,9 @@ Este projeto não é apenas um "leitor de texto". Ele conecta uma interface segu
 * **Orquestração:** Arquivos de configuração para Kubernetes (Deployments e Services).
 * **Documentação:** OpenAPI (Swagger UI).
 ---
-# 🏗️ Arquitetura e Resiliência
+# Arquitetura e Resiliência
 
 Esta seção detalha como o sistema foi desenhado para ser seguro, organizado e, acima de tudo, resistente a falhas.
-
-## 🟢 Para Quem Não é da Área (Explicação Simplificada)
 
 ### A Arquitetura: O "Gerente do Restaurante"
 
@@ -126,10 +124,6 @@ O sistema possui proteções automáticas, parecidas com disjuntores de energia 
 * **Tentativa Automática (Retry):** Se o sistema tenta falar com a Inteligência Artificial e ela não responde na hora, ele não desiste imediatamente. Ele tenta de novo (até 3 vezes) rapidamente, pois pode ter sido apenas um "soluço" na internet.
 * **Disjuntor Inteligente (Circuit Breaker):** Se a Inteligência Artificial cair de vez, o sistema "desliga" a comunicação com ela temporariamente. Em vez de deixar você esperando eternamente por uma resposta que não virá, ele avisa imediatamente: *"O serviço está instável no momento"*. Isso impede que o sistema todo trave.
 * **Controle de Fluxo (Bulkhead):** É como limitar o número de pedidos que entram na cozinha ao mesmo tempo. Se chegarem 1.000 pedidos, o sistema só deixa passar o que a cozinha aguenta processar, evitando um colapso total.
-
----
-
-## 🔵 Para o Público Técnico (Arquitetura e Implementação)
 
 O projeto adota uma **Arquitetura em Camadas (Layered Architecture)** clássica com integração de microsserviços via comunicação síncrona, robustecida por padrões de tolerância a falhas.
 
@@ -302,32 +296,6 @@ src/
     "probabilidade": 0.92
 }
 ```
-
-## Security
-
-### Security Measures
-
--  **Encryption:** All data is encrypted in transit and at rest
--  **Authentication:** Secure API key authentication
--  **Validation:** Input validation and sanitization
--  **Monitoring:** Continuous security monitoring
-
-### Reporting Security Issues
-
-If you discover a security vulnerability, please:
-
-1. **Do NOT** create a public issue
-2. Email us at security@example.com
-3. Include detailed information about the vulnerability
-4. Allow time for us to address the issue before disclosure
-
-### Security Best Practices
-
-- Keep your API keys secure
-- Use HTTPS in production
-- Regularly update dependencies
-- Follow the principle of least privilege
-
 
 ## Roadmap
 
