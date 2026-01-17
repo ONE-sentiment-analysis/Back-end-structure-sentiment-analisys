@@ -34,6 +34,121 @@ Este projeto não é apenas um "leitor de texto". Ele conecta uma interface segu
 * **Resiliente:** Se a Inteligência Artificial demorar para responder, o sistema não trava; ele sabe lidar com instabilidades para que você nunca perca seu trabalho.
 * **Organizado:** Mantém um histórico de tudo o que foi analisado.
 
+### Como este repositório está organizado
+
+
+```
+.
+├── .dockerignore
+├── .gitattributes
+├── .github
+│   └── workflows
+│       └── main.yml
+├── .gitignore
+├── .mvn
+│   └── wrapper
+│       └── maven-wrapper.properties
+├── Dockerfile
+├── README.md
+├── docker-compose.yml
+├── k8s
+│   ├── oracle-deployment.yaml
+│   ├── oracle-service.yaml
+│   ├── springboot-deployment.yaml
+│   └── springboot-service.yaml
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── br
+    │   │       └── com
+    │   │           └── one
+    │   │               └── sentiment_analysis
+    │   │                   ├── SentimentAnalisysApplication.java
+    │   │                   ├── config
+    │   │                   │   ├── JwtAuthenticationFilter.java
+    │   │                   │   ├── JwtUtil.java
+    │   │                   │   ├── OpenApiConfig.java
+    │   │                   │   └── SecurityConfig.java
+    │   │                   ├── controller
+    │   │                   │   ├── AuthController.java
+    │   │                   │   └── SentimentController.java
+    │   │                   ├── dto
+    │   │                   │   ├── integration
+    │   │                   │   │   ├── PythonRequestDTO.java
+    │   │                   │   │   └── PythonResponseDTO.java
+    │   │                   │   ├── request
+    │   │                   │   │   ├── IdentificadorReferencia.java
+    │   │                   │   │   ├── SentimentAnalysisRequest.java
+    │   │                   │   │   ├── UserLoginRequest.java
+    │   │                   │   │   └── UserRegisterRequest.java
+    │   │                   │   └── response
+    │   │                   │       ├── PessoaCadastroResponse.java
+    │   │                   │       ├── PessoaResponse.java
+    │   │                   │       ├── SentimentListItemResponse.java
+    │   │                   │       ├── SentimentResponse.java
+    │   │                   │       └── UserLoginResponse.java
+    │   │                   ├── exception
+    │   │                   │   ├── ExternalApiException.java
+    │   │                   │   ├── InvalidPasswordException.java
+    │   │                   │   ├── ResourceNotFoundException.java
+    │   │                   │   ├── UserAlreadyExistException.java
+    │   │                   │   └── UserNotFoundException.java
+    │   │                   ├── handler
+    │   │                   │   └── GlobalExceptionHandler.java
+    │   │                   ├── model
+    │   │                   │   ├── APIError
+    │   │                   │   │   └── ApiErrorModel.java
+    │   │                   │   ├── avaliacao
+    │   │                   │   │   ├── AnaliseSentimento.java
+    │   │                   │   │   ├── Probabilidade.java
+    │   │                   │   │   ├── TextoAvaliacao.java
+    │   │                   │   │   ├── TipoSentimento.java
+    │   │                   │   │   └── VersaoModelo.java
+    │   │                   │   └── user
+    │   │                   │       └── Usuario.java
+    │   │                   ├── repository
+    │   │                   │   ├── SentimentRepository.java
+    │   │                   │   └── UsuarioRepository.java
+    │   │                   └── service
+    │   │                       ├── ExternalApiService.java
+    │   │                       ├── IExternalApiService.java
+    │   │                       └── UserDetailsServiceImpl.java
+    │   └── resources
+    │       ├── application-postgresql.properties
+    │       ├── application-production.properties
+    │       └── application.properties
+    └── test
+        ├── java
+        │   └── br
+        │       └── com
+        │           └── one
+        │               └── sentiment_analysis
+        │                   ├── SentimentAnalisysApplicationTests.java
+        │                   ├── controller
+        │                   │   └── AuthControllerSmokeTest.java
+        │                   ├── dto
+        │                   │   └── response
+        │                   │       └── SentimentResponseTest.java
+        │                   ├── model
+        │                   │   ├── APIError
+        │                   │   │   └── ApiErrorModelTest.java
+        │                   │   ├── avaliacao
+        │                   │   │   ├── AnaliseSentimentoTest.java
+        │                   │   │   ├── ProbabilidadeTest.java
+        │                   │   │   └── TextoAvaliacaoTest.java
+        │                   │   └── user
+        │                   │       └── UsuarioTest.java
+        │                   └── repository
+        │                       ├── SentimentRepositoryTest.java
+        │                       └── UsuarioRepositoryTest.java
+        └── resources
+            └── application-test.properties
+
+```
+
 ### Principais Funcionalidades
 
 #### 1. Análise de Sentimentos
