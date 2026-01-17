@@ -241,7 +241,7 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas:
 
 ---
 
-### 🐳 Execução Rápida (Recomendada)
+### Execução Rápida (Recomendada)
 
 A maneira mais simples de ver o projeto rodando é utilizando a containerização. O projeto já conta com um `Dockerfile` otimizado e um orquestrador `docker-compose`.
 
