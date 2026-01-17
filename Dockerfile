@@ -1,7 +1,14 @@
+FROM eclipse-temurin:25-jdk-alpine AS build
+WORKDIR /app
+
+COPY . .
+
+RUN ./mvnw package -DskipTests
+
 FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 
-COPY target/*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
