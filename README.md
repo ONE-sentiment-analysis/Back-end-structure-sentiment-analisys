@@ -537,20 +537,56 @@ A arquitetura expõe métricas vitais para monitoramento da saúde da aplicaçã
 
 ## Roadmap
 
-### Current Version (v1.0)
-- Core functionality
-- Basic API
-- Documentation
+Este roteiro detalha a trajetória de evolução do projeto, desde a estabilização das funcionalidades atuais até a expansão para uma arquitetura distribuída e orientada a eventos.
 
-### Future (v2.0)
-- Complete rewrite
-- Breaking changes
-- New architecture
+### Versão Atual (v1.0)
+*Foco: Estabilização, Resiliência e Containerização.*
 
-### Ideas
-- OCI Autonomous Database
-- OCI deploy
-- Kubernetes
+* **Core & Análise de Sentimentos**
+    * [x] **Análise Síncrona:** Endpoint `/api/v1/sentiment` funcional com integração via Feign Client.
+    * [x] **Processamento em Lote (Batch):** Processamento de arquivos CSV via *streaming* (baixo consumo de memória).
+    * [x] **Relatórios:** Exportação automatizada de dados processados para Excel (.xlsx) com estilização visual.
+
+* **Segurança**
+    * [x] **Autenticação JWT:** Ciclo completo de registro e login.
+    * [x] **Proteção de Dados:** Criptografia de senhas com BCrypt.
+    * [x] **Documentação:** Swagger/OpenAPI configurado e público.
+
+* **Infraestrutura & Resiliência**
+    * [x] **Tolerância a Falhas:** Implementação de *Circuit Breaker*, *Retry* e *Bulkhead* (Resilience4j).
+    * [x] **Containerização:** Docker Compose para orquestração (App + Postgres).
+    * [x] **Kubernetes:** Manifestos criados para deploy (Oracle e Spring Boot).
+    * [x] **CI/CD:** Pipelines do GitHub Actions para Build, Test e Lint.
+
+---
+
+### Próximos Passos (v2.0)
+*Objetivo: Escalonamento, Desacoplamento e Performance Empresarial.*
+
+* **Arquitetura Orientada a Eventos**
+    * [ ] **Filas de Mensagens:** Implementação de **RabbitMQ** ou **Kafka** para processamento assíncrono de grandes arquivos CSV, garantindo durabilidade e escalabilidade.
+    * [ ] **Notificações:** Sistema de *Webhooks* ou envio de e-mail para avisar o usuário quando o processamento em lote for concluído.
+
+* **Segurança Avançada**
+    * [ ] **RBAC (Role-Based Access Control):** Implementação de perfis de acesso distintos (`ROLE_ADMIN`, `ROLE_USER`).
+    * [ ] **Refresh Token:** Fluxo de renovação de tokens para melhorar a experiência do usuário sem comprometer a segurança.
+
+* **Performance**
+    * [ ] **Cache Distribuído:** Integração com **Redis** para cachear análises de textos recorrentes, reduzindo latência e custos computacionais da API Python.
+
+---
+
+### Visão de Longo Prazo (Ideias Futuras)
+*Foco: Inovação, Cloud Native e IA Avançada.*
+
+* **Cloud & Serverless**
+    * [ ] **OCI Migration:** Migração do banco de dados para **Oracle Autonomous Database**.
+    * [ ] **Serverless Computing:** Mover o processamento pesado de CSV para funções *serverless*, permitindo escala infinita sem travar a API principal.
+
+* **Evolução da IA**
+    * [ ] **Gerar resumos explicativos ("Por que este comentário é negativo?").**
+    * [ ] **Separar a avaliação do produto e a avaliação da entrega ou do atendimento, etc.**
+    * [ ] **Análise de Nuance:** Modelos avançados para detecção de ironia e sarcasmo, superando as limitações da Regressão Logística.
 
 ## Team
 
