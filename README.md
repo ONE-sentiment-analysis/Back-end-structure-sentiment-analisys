@@ -221,8 +221,6 @@ Este projeto não é apenas um "leitor de texto". Ele conecta uma interface segu
 
 Aqui está uma demonstração de como o sistema processa um comentário em tempo real e, em seguida, analisa uma planilha inteira:
 
-*(Substitua o link acima pelo caminho do seu GIF demonstrativo)*
-
 ---
 
 ## Visão Técnica
